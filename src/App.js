@@ -1,25 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./Components/Home";
+import Events from "./Components/Events";
+import About from "./Components/AboutUs";
+import SiteNavbar from "./Components/Navbar";
+import ChooseCategory from "./Components/ChooseCategory";
+import Search from "./Components/Search";
+import Event from "./Components/Event";
+import Footer from "./Components/Footer";
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <SiteNavbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/events/:category" element={<Events />} />
+        <Route path="/about-us" element={<About />} />
+        <Route path="/choose-category" element={<ChooseCategory/>}/>
+        <Route path="/search" element={<Search/>}/>
+        <Route path="/event/:id" element={<Event/>}/>
+      </Routes>
+      <Footer/>
+    </Router>
   );
 }
-
-export default App;
