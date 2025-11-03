@@ -1,4 +1,4 @@
-import Container from 'react-bootstrap/Container'
+import { Container, Button } from 'react-bootstrap'
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 
 export default function Footer(){
@@ -15,7 +15,20 @@ export default function Footer(){
                 <FaFacebook size={30} color="#547fffff" />
                 <FaTwitter size={30} color="#69cdffff" />
             </div>
-            <div>Претплатете се на нашиот билтен <input placeholder='example@example.com'/><input type='button' value='submit'/></div>
+            <div>Претплатете се на нашиот билтен <input placeholder='example@example.com'/>
+                <Button
+                    type="button"
+                    style={{
+                        backgroundColor: '#EBC042',
+                        color: 'black',
+                        border: '0px solid',
+                        boxShadow: 'none'
+                    }}
+                    className="focus-outline my-4 mx-2"
+                >
+                    Subscribe
+                </Button>
+            </div>
         </Container>
 
     )
