@@ -1,0 +1,380 @@
+import { Link } from "react-router-dom";
+import { Container, Image, Button } from "react-bootstrap";
+export default function AboutUs() {
+
+  const bgBlue = "#00537A";
+  const bgGray = "#D3D3D3";
+
+  const overlayText = {
+    position: "absolute",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    fontWeight: "bold",
+    lineHeight: "55px",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    pointerEvents: "none"
+  };
+
+  const sectionStyle = (bg) => ({
+    position: "relative",
+    background: bg,
+    padding: "60px 20px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    overflow: "hidden"
+  });
+
+  const subtitle = {
+    fontSize: "36px",
+    fontWeight: "800",
+    color: "black",
+    marginBottom: "20px",
+    textAlign: "left",
+    width: "100%",
+    maxWidth: "900px"
+  };
+
+  const paragraph = {
+    maxWidth: "900px",
+    fontSize: "18px",
+    lineHeight: "28px",
+    color: "#111",
+    textAlign: "left",
+    marginBottom: "20px"
+  };
+
+  return (
+    <div>
+        {/* === SECTION 1  === */}
+    <div
+        style={{
+            backgroundColor: "#2a6d89",
+            position: "relative",
+            padding: "80px 40px",
+            overflow: "hidden",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-start", 
+            gap: "40px",                  
+        }}
+    >
+        {/* Left Image with Diagonal Mask */}
+        <div
+            style={{
+                width: "48%",
+                height: "420px",
+                backgroundImage: "url('/yourImage1.png')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+            }}
+        />
+
+        {/* ABOUT US Title */}
+        <h1
+            style={{
+                position: "absolute",
+                top: "60px",
+                left: "52%",
+                transform: "translateX(-50%)",
+                fontSize: "100px",
+                fontWeight: "900",
+                color: "black",
+                margin: 0,
+                zIndex: 3,
+            }}
+        >
+            ABOUT US
+        </h1>
+
+        {/* Repeating UniVibe Background Text */}
+        <div
+            style={{
+                position: "absolute",
+                right: "0",
+                top: "0",
+                width: "60%",
+                height: "100%",
+                opacity: 0.15,
+                fontSize: "60px",
+                fontWeight: "bold",
+                color: "black",
+                lineHeight: "70px",
+                padding: "40px",
+                zIndex: 1,
+            }}
+        >
+            UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe
+        </div>
+
+        {/* Paragraph Box */}
+        <div
+            style={{
+                width: "40%",
+                backgroundColor: "rgba(255,255,255,0.3)",
+                backdropFilter: "blur(4px)",
+                padding: "40px",
+                borderRadius: "10px",
+                color: "black",
+                fontSize: "20px",
+                fontWeight: "500",
+                zIndex: 5,
+                marginLeft: "0",   
+            }}
+        >
+            „Зад UniVibe стои мала, но посветена група студенти кои веруваат дека
+            универзитетскиот живот е повеќе од само книги и испити.“
+        </div>
+    </div>
+
+
+
+      {/* SECTION 2 */}
+      <section
+        style={{
+          background: "#D3D3D3",
+          padding: "50px 80px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          position: "relative"
+        }}
+      >
+        <div style={{ flex: "1", minWidth: "350px", maxWidth: "550px" }}>
+          <h2
+            style={{
+              fontSize: "56px",
+              fontWeight: "900",
+              color: "black",
+              marginBottom: "20px",
+              textAlign: "left"
+            }}
+          >
+            Зошто<br />UniVibe?
+          </h2>
+
+          <p
+            style={{
+              fontSize: "18px",
+              lineHeight: "28px",
+              color: "#111",
+              textAlign: "left"
+            }}
+          >
+            UniVibe е твоето место за сите универзитетски настани!
+            Без разлика дали сакаш да присуствуваш на интересно предавање,
+            работилница или журка – тука ќе најдеш се.<br /><br />
+            Ние веруваме дека студентскиот живот треба да биде комбинација од
+            учење, дружба и добар провод.<br />
+            Со UniVibe никогаш нема да пропуштиш што се случува на твојот факултет!
+          </p>
+        </div>
+
+        <div
+          style={{
+            flex: "1",
+            display: "flex",
+            justifyContent: "center",
+            position: "relative",
+            minWidth: "350px",
+            marginTop: "40px"
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              fontSize: "100px",
+              fontWeight: "900",
+              color: "rgba(0,0,0,0.1)",
+              top: "50px",
+              left: "-40px",
+              zIndex: 0,
+              pointerEvents: "none",
+              lineHeight: "90px"
+            }}
+          >
+            UniVibe<br />UniVibe<br />UniVibe<br />UniVibe<br />UniVibe
+          </div>
+
+          <img
+            src="/Screenshot_1.png"
+            alt="Instagram post"
+            style={{
+              width: "48%",
+              height: "500px",
+              maxWidth: "100%",
+              borderRadius: "16px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.25)",
+              zIndex: 2
+            }}
+          />
+        </div>
+      </section>
+
+            {/* ========== SECTION 3 ========== */}
+      <section
+        style={{
+          background: "#82C6D9",
+          padding: "100px 60px",
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          overflow: "hidden",
+        }}
+      >
+        {/* Repeating UniVibe background text on the RIGHT */}
+        <div
+          style={{
+            position: "absolute",
+            top: "-20px",
+            right: "-50px",
+            width: "55%",
+            fontSize: "60px",
+            fontWeight: "300",
+            lineHeight: "55px",
+            color: "rgba(0,0,0,0.25)",
+            transform: "rotate(-3deg)",
+            pointerEvents: "none",
+            textAlign: "right",
+            whiteSpace: "wrap",
+          }}
+        >
+          UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe
+        </div>
+
+        {/* TITLE + BUTTON ROW */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            gap: "25px",
+            marginBottom: "40px",
+            zIndex: 2,
+          }}
+        >
+          <h2
+            style={{
+              fontSize: "70px",
+              fontWeight: "900",
+              color: "black",
+              margin: 0,
+              lineHeight: "1.1",
+            }}
+          >
+            Што нуди <br /> UniVibe
+          </h2>
+
+            <Button
+                as={Link}
+                to="/choose-category"
+                style={{
+                    backgroundColor: "#82C6D9",
+                    color: "black",
+                    border: "none",
+                    padding: "12px 22px",
+                    fontSize: "18px",
+                    fontWeight: "600",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    marginLeft: "20px"
+                }}
+            >
+                Види повеќе
+            </Button>
+        </div>
+
+        {/* BULLET LIST */}
+        <p
+          style={{
+            listStyle: "none",
+            padding: 0,
+            margin: 0,
+            fontSize: "20px",
+            fontWeight: "500",
+            color: "black",
+            zIndex: 2,
+            lineHeight: "32px",
+            width: "1000px",
+          }}
+        >
+            UniVibe служи како твој централен простор за откривање на најразлични студентски активности. На платформата можеш брзо да пребаруваш настани според интерес, било да се академски, културни или забавни. Од најнови работилници и научни предавања, па сѐ до концерти, фестивали и дружења, UniVibe ги обединува сите информации на едно место. Дополнително, апликацијата ти овозможува да се поврзеш со студенти од различни факултети и да ја прошириш својата заедница. Избери категорија – Технологија, Кариера, Истражување, Култура, Здравје, Едукација или Забава – и откриј ги сите можности што ги нуди UniVibe.        </p>
+      </section>
+
+
+        {/* ========== SECTION 4 ========== */}
+        
+        <section
+        style={{
+            background: "#D3D3D3",
+            padding: "80px 60px",
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            overflow: "hidden",
+        }}
+        >
+        {/* LEFT BOTTOM CORNER SILHOUETTES */}
+        <div
+            style={{
+            position: "absolute",
+            left: "0",                   
+            bottom: "0",                
+            width: "750px",
+            height: "750px",
+            backgroundImage: "url('/silhouettes2.png')",
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "left bottom",
+            transform: "rotate(8deg)",  
+            zIndex: 1,
+            }}
+        ></div>
+
+        {/* RIGHT TEXT */}
+        <div
+            style={{
+            width: "55%",
+            marginLeft: "auto",
+            zIndex: 3,
+            }}
+        >
+            <h2
+            style={{
+                fontSize: "70px",
+                fontWeight: "900",
+                color: "black",
+                marginBottom: "20px",
+                lineHeight: "1.1",
+                marginLeft:"20px"
+            }}
+            >
+            Која е нашата<br />мисија
+            </h2>
+
+            <p
+            style={{
+                fontSize: "22px",
+                fontWeight: "400",
+                color: "black",
+                lineHeight: "32px",
+                maxWidth: "600px",
+            }}
+            >
+            „Идејата за UniVibe се роди кога сфативме дека студентите често дознаваат
+            за настаните – предоцна. Сакаме тоа да го смениме.“
+            </p>
+        </div>
+        </section>
+
+
+
+    </div>
+  );
+}
