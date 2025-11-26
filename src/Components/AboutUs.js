@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Link } from "react-router-dom";
 import { Container, Image, Button } from "react-bootstrap";
 export default function AboutUs() {
@@ -378,3 +379,10 @@ export default function AboutUs() {
     </div>
   );
 }
+=======
+export default function AboutUs(){
+    return(
+        <div>About us</div>
+    )
+}
+>>>>>>> 2333362b4540955db0970afbbb070af58f32f278
