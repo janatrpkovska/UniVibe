@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../App.css";
 import "./ChooseCategory.css";
@@ -47,32 +47,10 @@ const categories = [
 ];
 
 export default function ChooseCategory() {
-  const [search, setSearch] = useState("");
-  const [showNoResult, setShowNoResult] = useState(false);
   const navigate = useNavigate();
 
-  const normalized = search.trim().toLowerCase();
-
-  const filteredCategories =
-    normalized.length === 0
-      ? categories
-      : categories.filter((cat) =>
-          cat.name.toLowerCase().includes(normalized)
-        );
-
-  const handleChange = (e) => {
-    setSearch(e.target.value);
-    setShowNoResult(false);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      if (filteredCategories.length === 1) {
-        navigate(`/categories/${filteredCategories[0].id}`);
-      } else if (filteredCategories.length === 0) {
-        setShowNoResult(true);
-      }
-    }
+  const handleSearchClick = () => {
+    navigate("/search");
   };
 
   return (
@@ -81,26 +59,19 @@ export default function ChooseCategory() {
         <div className="categories-content">
           <h2 className="cat-title">ИЗБЕРИ КАТЕГОРИЈА</h2>
 
-          <div className="search-bar">
+          {/* Search bar што само пренасочува на /search */}
+          <div className="search-bar" onClick={handleSearchClick}>
             <span className="search-icon">🔍</span>
             <input
               type="text"
               placeholder="Пребарај.."
-              value={search}
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
+              readOnly
             />
           </div>
 
-          {showNoResult && normalized.length > 0 && (
-            <p className="no-results-msg">
-              Нема категорија што одговара на „<strong>{search}</strong>“.<br />
-              Одбери некоја од постоечките категории подолу. ✨
-            </p>
-          )}
-
+          {/* Грид со категории */}
           <div className="categories-grid">
-            {filteredCategories.map((cat) => (
+            {categories.map((cat) => (
               <Link
                 key={cat.id}
                 to={`/categories/${cat.id}`}

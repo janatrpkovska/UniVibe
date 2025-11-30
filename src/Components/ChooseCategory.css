@@ -5,6 +5,11 @@
   background: #f5f7fb;
   display: flex;
   justify-content: center;
+
+  background-image: url("/public/category_images/bg.jpg");
+  background-size: cover;          
+  background-position: center;     
+  background-repeat: no-repeat;  
 }
 
 .categories-inner {
