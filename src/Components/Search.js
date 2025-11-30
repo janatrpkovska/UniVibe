@@ -64,7 +64,8 @@ function FilterSection() {
             width: '100%',
             display: 'flex',
             justifyContent: 'center',
-            marginBottom: '32px'
+            marginBottom: '32px',
+            paddingTop: '32px',
         }}>
             <div style={{
                 width: '900px',
@@ -287,9 +288,6 @@ const paginationBtn = {
 export default function SearchPage() {
     return (
         <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
-            <StudentsSection />
-
-            <HighlightSection />
 
             <FilterSection />
 
