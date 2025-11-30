@@ -59,7 +59,7 @@ export default function ChooseCategory() {
         <div className="categories-content">
           <h2 className="cat-title">ИЗБЕРИ КАТЕГОРИЈА</h2>
 
-          {/* Search bar што само пренасочува на /search */}
+        
           <div className="search-bar" onClick={handleSearchClick}>
             <span className="search-icon">🔍</span>
             <input
@@ -69,7 +69,7 @@ export default function ChooseCategory() {
             />
           </div>
 
-          {/* Грид со категории */}
+  
           <div className="categories-grid">
             {categories.map((cat) => (
               <Link
