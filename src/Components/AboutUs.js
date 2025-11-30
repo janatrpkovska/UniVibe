@@ -132,90 +132,6 @@ export default function AboutUs() {
     </div>
 
 
-
-      {/* SECTION 2 */}
-      <section
-        style={{
-          background: "#D3D3D3",
-          padding: "50px 80px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          position: "relative"
-        }}
-      >
-        <div style={{ flex: "1", minWidth: "350px", maxWidth: "550px" }}>
-          <h2
-            style={{
-              fontSize: "56px",
-              fontWeight: "900",
-              color: "black",
-              marginBottom: "20px",
-              textAlign: "left"
-            }}
-          >
-            Зошто<br />UniVibe?
-          </h2>
-
-          <p
-            style={{
-              fontSize: "18px",
-              lineHeight: "28px",
-              color: "#111",
-              textAlign: "left"
-            }}
-          >
-            UniVibe е твоето место за сите универзитетски настани!
-            Без разлика дали сакаш да присуствуваш на интересно предавање,
-            работилница или журка – тука ќе најдеш се.<br /><br />
-            Ние веруваме дека студентскиот живот треба да биде комбинација од
-            учење, дружба и добар провод.<br />
-            Со UniVibe никогаш нема да пропуштиш што се случува на твојот факултет!
-          </p>
-        </div>
-
-        <div
-          style={{
-            flex: "1",
-            display: "flex",
-            justifyContent: "center",
-            position: "relative",
-            minWidth: "350px",
-            marginTop: "40px"
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              fontSize: "100px",
-              fontWeight: "900",
-              color: "rgba(0,0,0,0.1)",
-              top: "50px",
-              left: "-40px",
-              zIndex: 0,
-              pointerEvents: "none",
-              lineHeight: "90px"
-            }}
-          >
-            UniVibe<br />UniVibe<br />UniVibe<br />UniVibe<br />UniVibe
-          </div>
-
-          <img
-            src="/Screenshot_1.png"
-            alt="Instagram post"
-            style={{
-              width: "48%",
-              height: "500px",
-              maxWidth: "100%",
-              borderRadius: "16px",
-              boxShadow: "0 8px 30px rgba(0,0,0,0.25)",
-              zIndex: 2
-            }}
-          />
-        </div>
-      </section>
-
             {/* ========== SECTION 3 ========== */}
       <section
         style={{
@@ -281,10 +197,10 @@ export default function AboutUs() {
                     fontWeight: "600",
                     borderRadius: "8px",
                     cursor: "pointer",
-                    marginLeft: "20px"
+                    marginLeft: "-50px"
                 }}
             >
-                Види повеќе
+                Пребарај
             </Button>
         </div>
 
@@ -333,6 +249,7 @@ export default function AboutUs() {
             backgroundPosition: "left bottom",
             transform: "rotate(8deg)",  
             zIndex: 1,
+            marginTop:"13px",
             }}
         ></div>
 
@@ -370,6 +287,23 @@ export default function AboutUs() {
             „Идејата за UniVibe се роди кога сфативме дека студентите често дознаваат
             за настаните – предоцна. Сакаме тоа да го смениме.“
             </p>
+            <Button
+                as={Link}
+                to="/"
+                style={{
+                    backgroundColor: "#D3D3D3",
+                    color: "black",
+                    border: "none",
+                    padding: "12px 22px",
+                    fontSize: "18px",
+                    fontWeight: "600",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    marginLeft: "-10px"
+                }}
+            >
+                Актуелни настани
+            </Button>
         </div>
         </section>
 

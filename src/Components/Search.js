@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 function StudentsSection() {
     return (
         <div
@@ -206,7 +207,7 @@ function EventsGrid() {
                                 fontWeight: 'bold',
                                 marginBottom: '8px'
                             }}>
-                                Event Title
+                                UniVibe
                             </h4>
 
                             <p style={{ fontSize: '14px', marginBottom: '4px' }}>
@@ -215,7 +216,7 @@ function EventsGrid() {
                             <p style={{ fontSize: '14px', marginBottom: '12px' }}>
                                 <b>Локација:</b> Факултет за информатички науки и компјутерско инженерство
                             </p>
-
+                            <Link to={`/event/${i + 1}`}>
                             <button style={{
                                 width: '100%',
                                 padding: '10px',
@@ -227,6 +228,7 @@ function EventsGrid() {
                             }}>
                                 Детали
                             </button>
+                            </Link>
                         </div>
                     ))}
                 </div>
