@@ -5,7 +5,9 @@ import { NavLink } from 'react-router-dom';
 function SiteNavbar() {
   return (
     <Navbar expand="lg" bg="light" className="shadow-sm px-2 py-0">
+      
       <Navbar.Brand className="me-auto">
+        <NavLink to="/">
         <img
           src="/logo.png"
           width="60"
@@ -13,6 +15,7 @@ function SiteNavbar() {
           className="d-inline-block align-top"
           alt="Logo"
         />
+        </NavLink>
       </Navbar.Brand>
 
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -72,6 +75,19 @@ function SiteNavbar() {
             За нас
           </Nav.Link>
         </Nav>
+          <button
+            className="btn"
+            style={{
+              backgroundColor: "#EBC042",
+              color: "black",
+              borderRadius: "10px",
+              padding: "6px 20px",
+              fontWeight: "600",
+              marginLeft: '-10vh'
+            }}
+          >
+            Најави се
+          </button>
       </Navbar.Collapse>
     </Navbar>
   );

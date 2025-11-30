@@ -1,0 +1,10 @@
+.fade-in-up {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 1s ease-out;
+}
+
+.fade-in-up.show {
+  opacity: 1;
+  transform: scale(1);
+}
