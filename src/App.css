@@ -28,6 +28,29 @@
   color: #61dafb;
 }
 
+.fab-add-event {
+  position: fixed;
+  top: 86px;
+  right: 20px;
+  z-index: 2000;
+
+  background: #ebc042;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+
+  padding: 10px 16px;
+  border-radius: 999px;
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.fab-add-event:hover {
+  color: #ffffff;
+  filter: brightness(0.97);
+}
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

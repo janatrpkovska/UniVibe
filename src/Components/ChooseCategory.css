@@ -1,15 +1,13 @@
-
 .categories-page {
-  min-height: calc(100vh - 160px); 
+  min-height: calc(100vh - 160px);
   padding: 40px 0 60px;
   background: #f5f7fb;
   display: flex;
   justify-content: center;
 
-  background-image: url("/public/category_images/bg.jpg");
-  background-size: cover;          
-  background-position: center;     
-  background-repeat: no-repeat;  
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .categories-inner {
@@ -27,7 +25,6 @@
   margin-bottom: 24px;
   letter-spacing: 1px;
 }
-
 
 .search-bar-wrapper {
   display: flex;
@@ -58,7 +55,6 @@
   font-size: 16px;
 }
 
-
 .search-suggestion {
   display: flex;
   align-items: center;
@@ -84,13 +80,11 @@
   color: #111111;
   font-weight: 600;
   font-size: 14px;
-  transition: transform 0.18s ease,
-              box-shadow 0.18s ease,
-              background 0.18s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 .suggestion-pill:hover {
-  background: #f4c542;         
+  background: #f4c542;
   transform: translateY(-2px);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
 }
@@ -125,7 +119,6 @@
   font-weight: 700;
 }
 
-
 .categories-grid {
   margin-top: 10px;
   display: grid;
@@ -133,7 +126,6 @@
   gap: 24px;
   justify-items: center;
 }
-
 
 .cat-card {
   background: #ffffff;
@@ -148,13 +140,11 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  transition: background 0.25s ease,
-              transform 0.18s ease,
-              box-shadow 0.18s ease;
+  transition: background 0.25s ease, transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .cat-card:hover {
-  background: #f4c542; 
+  background: #f4c542;
   transform: translateY(-6px);
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
 }
@@ -164,7 +154,6 @@
   font-weight: 600;
   font-size: 16px;
 }
-
 
 .cat-icon {
   width: 90px;

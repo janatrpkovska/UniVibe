@@ -6,7 +6,7 @@ export default function Footer(){
         <Container
             fluid
             style={{
-                boxShadow: "0 -4px 6px -4px rgba(0, 0, 0, 0.2)", // subtle top shadow
+                boxShadow: "0 -4px 6px -4px rgba(0, 0, 0, 0.2)", 
             }}
             className="text-center py-3 bg-light"
             >
