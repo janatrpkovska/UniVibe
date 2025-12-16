@@ -289,6 +289,10 @@ export default function SearchPage() {
     return (
         <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
 
+            <StudentsSection/>
+
+            <HighlightSection/>
+
             <FilterSection />
 
             <EventsGrid />

@@ -189,7 +189,7 @@ export default function AboutUs() {
                 as={Link}
                 to="/choose-category"
                 style={{
-                    backgroundColor: "#82C6D9",
+                    backgroundColor: "#EBC042",
                     color: "black",
                     border: "none",
                     padding: "12px 22px",
@@ -291,7 +291,7 @@ export default function AboutUs() {
                 as={Link}
                 to="/"
                 style={{
-                    backgroundColor: "#D3D3D3",
+                    backgroundColor: "#EBC042",
                     color: "black",
                     border: "none",
                     padding: "12px 22px",
