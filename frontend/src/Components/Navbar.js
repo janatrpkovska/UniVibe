@@ -1,6 +1,7 @@
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { NavLink } from "react-router-dom";
+import Login from "./Login";
 
 function SiteNavbar() {
   const navStyle = ({ isActive }) => ({
@@ -52,19 +53,21 @@ function SiteNavbar() {
             За нас
           </Nav.Link>
         </Nav>
-          <button
-            className="btn"
-            style={{
-              backgroundColor: "#EBC042",
-              color: "black",
-              borderRadius: "10px",
-              padding: "6px 20px",
-              fontWeight: "600",
-              marginLeft: '-10vh'
-            }}
-          >
-            Најави се
-          </button>
+          <NavLink to="/login" style={{ textDecoration: "none" }}>
+            <button
+              className="btn"
+              style={{
+                backgroundColor: "#EBC042",
+                color: "black",
+                borderRadius: "10px",
+                padding: "6px 20px",
+                fontWeight: "600",
+                marginLeft: "-10vh",
+              }}
+            >
+              Најави се
+            </button>
+          </NavLink>
       </Navbar.Collapse>
     </Navbar>
   );

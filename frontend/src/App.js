@@ -8,6 +8,8 @@ import Search from "./Components/Search";
 import SiteNavbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import AddEventForm from "./Components/AddEventForm";
+import Login from "./Components/Login";
+import Register from "./Components/Register";
 
 import "./App.css";
 
@@ -35,6 +37,8 @@ function AppRoutes() {
         <Route path="/categories/:categoryId" element={<CategoryEvents />} />
         <Route path="/search" element={<Search />} />
         <Route path="/events/new" element={<AddEventForm />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
 
       <Footer />
