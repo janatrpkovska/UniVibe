@@ -10,6 +10,7 @@ import Footer from "./Components/Footer";
 import AddEventForm from "./Components/AddEventForm";
 import Login from "./Components/Login";
 import Register from "./Components/Register";
+import ScrollToHash from "./ScrollToHash";
 
 import "./App.css";
 
@@ -49,6 +50,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <Router>
+      <ScrollToHash />
       <AppRoutes />
     </Router>
   );

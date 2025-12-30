@@ -200,7 +200,8 @@ export default function AboutUs() {
                     marginLeft: "-50px"
                 }}
             >
-                Пребарај
+                Откриј повеќе{" "}
+                <span style={{ fontWeight: 900, fontSize: "20px", marginLeft: "5px" }}>→</span>
             </Button>
         </div>
 
@@ -289,7 +290,7 @@ export default function AboutUs() {
             </p>
             <Button
                 as={Link}
-                to="/"
+                to="/#latest-events"
                 style={{
                     backgroundColor: "#EBC042",
                     color: "black",
@@ -305,6 +306,35 @@ export default function AboutUs() {
                 Актуелни настани
             </Button>
         </div>
+        </section>
+
+        <section
+          style={{
+              padding: "40px 0",
+              textAlign: "center",
+              background: "#82C6D9",
+
+          }}
+        >
+          <p
+            style={{
+              
+              fontSize: "18px",
+              fontWeight: "500",
+            }}
+          >
+            Контактирајте нè на{" "}
+            <a
+              href="mailto:univibe2025@yahoo.com"
+              style={{
+                color: "#bd9212ff",
+                fontWeight: "700",      // задебелени букви
+                textDecoration: "underline", // подвлечен
+              }}
+            >
+              univibe2025@yahoo.com
+            </a>
+          </p>
         </section>
 
 
