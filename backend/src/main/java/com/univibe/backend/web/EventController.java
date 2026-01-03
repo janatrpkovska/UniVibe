@@ -8,13 +8,17 @@ import com.univibe.backend.model.EventType;
 import com.univibe.backend.service.CategoryService;
 import com.univibe.backend.service.EventService;
 import com.univibe.backend.service.EventTypeService;
+import com.univibe.backend.service.FacultyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +27,7 @@ public class EventController {
     private final EventService eventService;
     private final CategoryService categoryService;
     private final EventTypeService eventTypeService;
+    private final FacultyService facultyService;
 
     @GetMapping("/public/get-events")
     public List<Event> getAllEvents() {
@@ -31,7 +36,7 @@ public class EventController {
     }
 
     @GetMapping("/public/get-event/{id}")
-    public Event getEvent(@PathVariable Long id) {
+    public Event getEventById(@PathVariable Long id) {
         return eventService.findById(id);
     }
 
@@ -40,6 +45,15 @@ public class EventController {
         Category category1 = categoryService.getCategoryByName(category);
 
         return eventService.findAllByCategory(category1);
+    }
+
+    @GetMapping("/public/locations")
+    public List<String> getLocations() {
+        return eventService.findAll()
+                .stream()
+                .map(Event::getLocation)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/create-event")
@@ -82,7 +96,34 @@ public class EventController {
     }
 
     @GetMapping("/public/filtered-events")
-    public List<Event> getFilteredEvents(EventFilterDTO eventFilterDTO) {
-        return eventService.filteredEvents(eventFilterDTO);
+    public Page<Event> getFilteredEvents(@RequestParam(required = false) String keyword,
+                                         @RequestParam(required = false) Long categoryId,
+                                         @RequestParam(required = false) Long eventTypeId,
+                                         @RequestParam(required = false) Long facultyId,
+                                         @RequestParam(required = false) String location,
+                                         @RequestParam(required = false) String date,
+                                         @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "10") int size) {
+        EventFilterDTO filter = new EventFilterDTO();
+        filter.setKeyword(keyword);
+        filter.setLocation(location);
+
+        if (categoryId != null) {
+            filter.setCategory(categoryService.getCategoryById(categoryId));
+        }
+        if (eventTypeId != null) {
+            filter.setEventType(eventTypeService.findEventTypeById(eventTypeId));
+        }
+        if (facultyId != null) {
+            filter.setFaculty(facultyService.findById(facultyId));
+        }
+        if (date != null && !date.isEmpty()) {
+            filter.setStartDate(LocalDate.parse(date));
+        }
+
+        filter.setPageNumber(page);
+        filter.setPageSize(size);
+
+        return eventService.filteredEvents(filter);
     }
 }

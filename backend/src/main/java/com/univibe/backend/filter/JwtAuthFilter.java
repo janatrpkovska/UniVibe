@@ -10,7 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -50,4 +49,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getMethod().equals("OPTIONS") ||
+                request.getRequestURI().startsWith("/api/auth/**") ||
+                request.getRequestURI().startsWith("/api/event/public/") ||
+                request.getRequestURI().startsWith("/api/category/public/") ||
+                request.getRequestURI().startsWith("/api/faculty/public/") ||
+                request.getRequestURI().startsWith("/api/user/public/");
+    }
 }

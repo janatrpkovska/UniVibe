@@ -4,6 +4,10 @@ import com.univibe.backend.dto.EventFilterDTO;
 import com.univibe.backend.model.*;
 import com.univibe.backend.repository.EventJpaRepository;
 import com.univibe.backend.service.EventService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -77,8 +81,15 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Event> filteredEvents(EventFilterDTO filter) {
+    public Page<Event> filteredEvents(EventFilterDTO filter) {
         Specification<Event> spec = Specification.where(null);
+
+        if (filter.getKeyword() != null && !filter.getKeyword().isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.or(
+                    cb.like(cb.lower(root.get("title")), "%" + filter.getKeyword().toLowerCase() + "%"),
+                    cb.like(cb.lower(root.get("description")), "%" + filter.getKeyword().toLowerCase() + "%")
+            ));
+        }
 
         if (filter.getCategory() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("category"), filter.getCategory()));
@@ -95,13 +106,20 @@ public class EventServiceImpl implements EventService {
         if (filter.getMode() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("mode"), filter.getMode()));
         }
+        if (filter.getLocation() != null && !filter.getLocation().isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("location"), filter.getLocation()));
+        }
         if (filter.getStartDate() != null) {
-            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("startDate"), filter.getStartDate()));
+            spec = spec.and((root, query, cb) ->
+                    cb.greaterThanOrEqualTo(root.get("startDate").as(LocalDate.class), filter.getStartDate()));
         }
         if (filter.getEndDate() != null) {
-            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("endDate"), filter.getEndDate()));
+            spec = spec.and((root, query, cb) ->
+                    cb.lessThanOrEqualTo(root.get("endDate"), filter.getEndDate()));
         }
 
-        return eventJpaRepository.findAll(spec);
+        Pageable pageable = PageRequest.of(filter.getPageNumber(), filter.getPageSize(), Sort.by("startDate").descending());
+
+        return eventJpaRepository.findAll(spec, pageable);
     }
 }

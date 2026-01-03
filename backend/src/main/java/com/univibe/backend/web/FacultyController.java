@@ -6,11 +6,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/faculty")
 @RequiredArgsConstructor
 public class FacultyController {
     private final FacultyService facultyService;
+
+    @GetMapping("/public/get-all")
+    public List<Faculty> getAllFaculties() {
+        return facultyService.findAll();
+    }
 
     @PostMapping("/create-faculty")
     @PreAuthorize("hasRole('ADMIN')")

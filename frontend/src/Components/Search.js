@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import {useEffect, useState} from "react";
+
 function StudentsSection() {
     return (
         <div
@@ -58,7 +60,8 @@ function HighlightSection() {
         </div>
     );
 }
-function FilterSection() {
+function FilterSection({ keyword, setKeyword, category, setCategory, faculty, setFaculty, date, setDate,
+                           selectedLocation, setSelectedLocation, categories, faculties, locations, onSearch }) {
     return (
         <div style={{
             width: '100%',
@@ -87,6 +90,8 @@ function FilterSection() {
                     <input
                         type="text"
                         placeholder="Пр. наука"
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
                         style={{
                             width: '100%',
                             padding: '12px',
@@ -105,37 +110,55 @@ function FilterSection() {
                 }}>
                     <div>
                         <label style={{ display: 'block', marginBottom: '8px' }}>Категорија</label>
-                        <select style={{
+                        <select
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            style={{
                             width: '100%',
                             padding: '12px',
                             borderRadius: '8px',
                             border: '1px solid #ccc'
                         }}>
-                            <option>Сите категории</option>
+                            <option value="">Сите категории</option>
+                            {categories.map(cat => (
+                                <option key={cat.id} value={cat.id}>{cat.name}</option>
+                            ))}
                         </select>
                     </div>
 
                     <div>
                         <label style={{ display: 'block', marginBottom: '8px' }}>Факултет</label>
-                        <select style={{
+                        <select
+                            value={faculty}
+                            onChange={(e) => setFaculty(e.target.value)}
+                            style={{
                             width: '100%',
                             padding: '12px',
                             borderRadius: '8px',
                             border: '1px solid #ccc'
                         }}>
-                            <option>Сите факултети</option>
+                            <option value="">Сите факултети</option>
+                            {faculties.map(fac => (
+                                <option key={fac.id} value={fac.id}>{fac.name}</option>
+                            ))}
                         </select>
                     </div>
 
                     <div>
                         <label style={{ display: 'block', marginBottom: '8px' }}>Локација</label>
-                        <select style={{
+                        <select
+                            value={selectedLocation}
+                            onChange={(e) => setSelectedLocation(e.target.value)}
+                            style={{
                             width: '100%',
                             padding: '12px',
                             borderRadius: '8px',
                             border: '1px solid #ccc'
                         }}>
-                            <option>Сите локации</option>
+                            <option value="">Сите локации</option>
+                            {locations.map((loc, index) => (
+                                <option key={index} value={loc}>{loc}</option>
+                            ))}
                         </select>
                     </div>
 
@@ -143,6 +166,8 @@ function FilterSection() {
                         <label style={{ display: 'block', marginBottom: '8px' }}>Датум</label>
                         <input
                             type="date"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
                             style={{
                                 width: '100%',
                                 padding: '12px',
@@ -153,7 +178,9 @@ function FilterSection() {
                     </div>
                 </div>
 
-                <div style={{ textAlign: 'center', marginTop: '32px' }}>
+                <div
+                    onClick={onSearch}
+                    style={{ textAlign: 'center', marginTop: '32px' }}>
                     <button style={{
                         padding: '12px 40px',
                         backgroundColor: '#013C58',
@@ -171,7 +198,7 @@ function FilterSection() {
     );
 }
 
-function EventsGrid() {
+function EventsGrid({ events, totalResults }) {
     return (
         <div style={{
             width: '100%',
@@ -181,7 +208,7 @@ function EventsGrid() {
         }}>
             <div style={{width: '900px'}}>
                 <p style={{ fontSize: '18px', marginBottom: '16px' }}>
-                    Вкупно резултати од пребарувањето: <b>5</b>
+                    Вкупно резултати од пребарувањето: <b>{totalResults}</b>
                 </p>
 
                 <div style={{
@@ -189,8 +216,8 @@ function EventsGrid() {
                     gridTemplateColumns: 'repeat(3, 1fr)',
                     gap: '24px'
                 }}>
-                    {Array(5).fill(0).map((_, i) => (
-                        <div key={i} style={{
+                    {events.map((event) => (
+                        <div key={event.id} style={{
                             backgroundColor: '#E0FFFF',
                             padding: '16px',
                             borderRadius: '12px',
@@ -201,44 +228,47 @@ function EventsGrid() {
                                 height: '170px',
                                 backgroundColor: '#ddd',
                                 borderRadius: '8px',
-                                marginBottom: '12px'
+                                marginBottom: '12px',
+                                backgroundImage: `url(${event.image_url || '/placeholder.png'})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center'
                             }}></div>
 
-                            <h4 style={{
-                                fontWeight: 'bold',
-                                marginBottom: '8px'
-                            }}>
-                                UniVibe
+                            <h4 style={{ fontWeight: 'bold', marginBottom: '8px' }}>
+                                {event.title}
                             </h4>
 
                             <p style={{ fontSize: '14px', marginBottom: '4px' }}>
-                                <b>Датум:</b> 10.12.2025
+                                <b>Датум:</b> {new Date(event.startDate).toLocaleDateString('mk-MK')}
                             </p>
+
                             <p style={{ fontSize: '14px', marginBottom: '12px' }}>
-                                <b>Локација:</b> Факултет за информатички науки и компјутерско инженерство
+                                <b>Локација:</b> {event.location}
                             </p>
-                            <Link to={`/event/${i + 1}`}>
-                            <button style={{
-                                width: '100%',
-                                padding: '10px',
-                                backgroundColor: '#FFB701',
-                                color: 'black',
-                                border: 'none',
-                                borderRadius: '8px',
-                                marginTop: '10px',
-                            }}>
-                                Детали
-                            </button>
+
+                            <Link to={`/event/${event.id}`}>
+                                <button style={{
+                                    width: '100%',
+                                    padding: '10px',
+                                    backgroundColor: '#FFB701',
+                                    color: 'black',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    marginTop: '10px',
+                                }}>
+                                    Детали
+                                </button>
                             </Link>
                         </div>
                     ))}
+
                 </div>
             </div>
         </div>
     );
 }
 
-function Pagination() {
+function Pagination({ page, setPage, totalPages, size, totalResults }) {
     return (
         <div style={{
             width: '100%',
@@ -254,22 +284,49 @@ function Pagination() {
             }}>
 
                 <div style={{ display: 'flex', gap: '8px' }}>
-                    <button style={paginationBtn}>First</button>
-                    <button style={paginationBtn}>Previous</button>
-                    <button style={{
+                    <button
+                        style={paginationBtn}
+                        disabled={page === 0}
+                        onClick={() => setPage(0)}
+                    >
+                        First
+                    </button>
+
+                    <button
+                        style={paginationBtn}
+                        disabled={page === 0}
+                        onClick={() => setPage(page - 1)}
+                    >
+                        Previous
+                    </button>
+
+                    <span style={{
                         ...paginationBtn,
                         backgroundColor: '#013C58',
                         color: 'white',
                         borderColor: '#013C58'
-                    }}>
-                        1
+                    }}> {page + 1} / {totalPages}
+                    </span>
+
+                    <button
+                        style={paginationBtn}
+                        disabled={page + 1 >= totalPages}
+                        onClick={() => setPage(page + 1)}
+                    >
+                        Next
                     </button>
-                    <button style={paginationBtn}>Next</button>
-                    <button style={paginationBtn}>Last</button>
+
+                    <button
+                        style={paginationBtn}
+                        disabled={page + 1 >= totalPages}
+                        onClick={() => setPage(totalPages - 1)}
+                    >
+                        Last
+                    </button>
                 </div>
 
                 <div style={{ fontSize: '14px', color: '#333' }}>
-                    Резултати по страна: <b>10</b>  |  Вкупно: <b>5</b>
+                    Резултати по страна: <b>{size}</b>  |  Вкупно: <b>{totalResults}</b>
                 </div>
             </div>
         </div>
@@ -286,6 +343,106 @@ const paginationBtn = {
 };
 
 export default function SearchPage() {
+    const [keyword, setKeyword] = useState("");
+    const [category, setCategory] = useState("");
+    const [faculty, setFaculty] = useState("");
+    const [date, setDate] = useState("");
+    const [events, setEvents] = useState([]);
+    const [page, setPage] = useState(0);
+    const [size] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalResults, setTotalResults] = useState(0);
+    const [locations, setLocations] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [faculties, setFaculties] = useState([]);
+    const [selectedLocation, setSelectedLocation] = useState("");
+
+
+    const fetchEvents = async () => {
+        let url = `http://localhost:9091/api/event/public/filtered-events?keyword=${keyword}&page=${page}&size=${size}`;
+        if(category) url += `&categoryId=${category}`;
+        if (faculty) url += `&facultyId=${faculty}`;
+        if (date) url += `&date=${date}`;
+        if (selectedLocation) url += `&location=${selectedLocation}`;
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error("Error fetching events");
+            }
+            const data = await response.json();
+
+            setEvents(data.content || []);
+            setTotalPages(data.totalPages || 0);
+            setTotalResults(data.totalElements || 0);
+        } catch (error) {
+            console.error("Failed to fetch events:", error);
+            setEvents([]);
+            setTotalPages(0);
+            setTotalResults(0);
+        }
+    };
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch('http://localhost:9091/api/category/public/get-all');
+                if (!res.ok) {
+                    console.error("Categories error:", res.status);
+                    setCategories([]);
+                    return;
+                }
+                const data = await res.json();
+                setCategories(data);
+            } catch (e) {
+                console.error("Categories fetch failed", e);
+                setCategories([]);
+            }
+        };
+        const fetchFaculties = async () => {
+            try {
+                const res = await fetch('http://localhost:9091/api/faculty/public/get-all');
+                if (!res.ok) {
+                    console.error("Faculties error:", res.status);
+                    setFaculties([]);
+                    return;
+                }
+                const data = await res.json();
+                setFaculties(data);
+            } catch (e) {
+                console.error("Faculties fetch failed", e);
+                setFaculties([]);
+            }
+        };
+        const fetchLocations = async () => {
+            try {
+                const res = await fetch('http://localhost:9091/api/event/public/locations');
+                if (!res.ok) {
+                    console.error("Locations error:", res.status);
+                    setLocations([]);
+                    return;
+                }
+                const data = await res.json();
+                setLocations(data);
+            } catch (e) {
+                console.error("Locations fetch failed", e);
+                setLocations([]);
+            }
+        };
+        fetchLocations();
+        fetchCategories();
+        fetchFaculties();
+
+    }, []);
+
+    useEffect(() => {
+        setPage(0);
+    }, [keyword, category, faculty, date, selectedLocation]);
+
+    useEffect(() => {
+        fetchEvents();
+    }, [page, keyword, category, faculty, date, selectedLocation]);
+
     return (
         <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
 
@@ -293,11 +450,39 @@ export default function SearchPage() {
 
             <HighlightSection/>
 
-            <FilterSection />
+            <FilterSection
+                keyword={keyword}
+                setKeyword={setKeyword}
+                category={category}
+                setCategory={setCategory}
+                faculty={faculty}
+                setFaculty={setFaculty}
+                date={date}
+                setDate={setDate}
+                selectedLocation={selectedLocation}
+                setSelectedLocation={setSelectedLocation}
+                categories={categories}
+                faculties={faculties}
+                locations={locations}
+                onSearch={() => {
+                    setPage(0);
+                    fetchEvents();
+                }}
+            />
 
-            <EventsGrid />
+            <EventsGrid
+                events={events}
+                totalResults={totalResults}
+            />
 
-            <Pagination />
+            <Pagination
+                page={page}
+                setPage={setPage}
+                totalPages={totalPages}
+                size={size}
+                totalResults={totalResults}
+            />
+
         </div>
     );
 }

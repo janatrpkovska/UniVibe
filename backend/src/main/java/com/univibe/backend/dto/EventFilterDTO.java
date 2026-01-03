@@ -5,17 +5,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventFilterDTO {
+    private String keyword;
     private Category category;
     private EventType eventType;
     private Faculty faculty;
     private EventStatus status;
     private EventMode mode;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private String location;
+    private int pageNumber = 0;
+    private int pageSize = 10;
 }

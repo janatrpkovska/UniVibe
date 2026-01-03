@@ -2,6 +2,7 @@ package com.univibe.backend.service;
 
 import com.univibe.backend.dto.EventFilterDTO;
 import com.univibe.backend.model.*;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,5 +15,5 @@ public interface EventService {
     Event deleteEvent(Long id);
     List<Event> findAll();
     List<Event> findAllByCategory(Category category);
-    List<Event> filteredEvents (EventFilterDTO eventFilterDTO);
+    Page<Event> filteredEvents (EventFilterDTO eventFilterDTO);
 }
