@@ -372,7 +372,6 @@ export default function SearchPage() {
             setEvents([]);
             setTotalPages(0);
             setTotalResults(0);
-            //setHasSearched(false);
             return;
         }
 
