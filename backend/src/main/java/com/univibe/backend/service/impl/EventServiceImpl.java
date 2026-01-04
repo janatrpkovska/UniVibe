@@ -110,12 +110,18 @@ public class EventServiceImpl implements EventService {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("location"), filter.getLocation()));
         }
         if (filter.getStartDate() != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.greaterThanOrEqualTo(root.get("startDate").as(LocalDate.class), filter.getStartDate()));
-        }
-        if (filter.getEndDate() != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.lessThanOrEqualTo(root.get("endDate"), filter.getEndDate()));
+            LocalDate selectedDate = filter.getStartDate();
+            spec = spec.and((root, query, cb) -> cb.or(
+                    cb.and(
+                            cb.isNotNull(root.get("endDate")),
+                            cb.lessThanOrEqualTo(root.get("startDate").as(LocalDate.class), selectedDate),
+                            cb.greaterThanOrEqualTo(root.get("endDate"), selectedDate)
+                    ),
+                    cb.and(
+                            cb.isNull(root.get("endDate")),
+                            cb.equal(root.get("startDate").as(LocalDate.class), selectedDate)
+                    )
+            ));
         }
 
         Pageable pageable = PageRequest.of(filter.getPageNumber(), filter.getPageSize(), Sort.by("startDate").descending());
