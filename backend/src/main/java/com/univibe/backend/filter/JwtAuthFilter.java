@@ -48,14 +48,4 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getMethod().equals("OPTIONS") ||
-                request.getRequestURI().startsWith("/api/auth/**") ||
-                request.getRequestURI().startsWith("/api/event/public/") ||
-                request.getRequestURI().startsWith("/api/category/public/") ||
-                request.getRequestURI().startsWith("/api/faculty/public/") ||
-                request.getRequestURI().startsWith("/api/user/public/");
-    }
 }

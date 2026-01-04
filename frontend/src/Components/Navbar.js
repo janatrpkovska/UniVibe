@@ -1,8 +1,6 @@
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { NavLink } from "react-router-dom";
-import Login from "./Login";
-import { useEffect } from "react";
 import { useAuth } from "../util/AuthProvider";
 
 function SiteNavbar() {

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Container, Image, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../util/AuthProvider";
@@ -8,7 +7,7 @@ import { useAuth } from "../util/AuthProvider";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { user, login } = useAuth()
+  const { login } = useAuth()
   const navigate = useNavigate()
 
 
