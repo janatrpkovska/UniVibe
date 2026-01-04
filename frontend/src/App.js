@@ -13,6 +13,7 @@ import Register from "./Components/Register";
 import ScrollToHash from "./ScrollToHash";
 
 import "./App.css";
+import { AuthProvider } from "./util/AuthProvider";
 
 function FloatingAddEventButton() {
   const location = useLocation();
@@ -28,6 +29,7 @@ function FloatingAddEventButton() {
 function AppRoutes() {
   return (
     <>
+      <AuthProvider>
       <SiteNavbar />
       <FloatingAddEventButton />
 
@@ -43,6 +45,7 @@ function AppRoutes() {
       </Routes>
 
       <Footer />
+      </AuthProvider>
     </>
   );
 }

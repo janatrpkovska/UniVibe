@@ -2,8 +2,11 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { NavLink } from "react-router-dom";
 import Login from "./Login";
+import { useEffect } from "react";
+import { useAuth } from "../util/AuthProvider";
 
 function SiteNavbar() {
+  const { isAuthenticated, logout } = useAuth()
   const navStyle = ({ isActive }) => ({
     backgroundColor: isActive ? "#EBC042" : "transparent",
     color: isActive ? "#ffffff" : "black",
@@ -53,7 +56,8 @@ function SiteNavbar() {
             За нас
           </Nav.Link>
         </Nav>
-          <NavLink to="/login" style={{ textDecoration: "none" }}>
+        {
+          !isAuthenticated ? (<NavLink to="/login" style={{ textDecoration: "none" }}>
             <button
               className="btn"
               style={{
@@ -67,7 +71,22 @@ function SiteNavbar() {
             >
               Најави се
             </button>
-          </NavLink>
+          </NavLink>):<button
+              className="btn"
+              style={{
+                backgroundColor: "#EBC042",
+                color: "black",
+                borderRadius: "10px",
+                padding: "6px 20px",
+                fontWeight: "600",
+                marginLeft: "-10vh",
+              }}
+              onClick={()=>logout()}
+            >
+              Одјави се
+            </button>
+        }
+          
       </Navbar.Collapse>
     </Navbar>
   );
