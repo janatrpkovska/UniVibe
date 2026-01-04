@@ -240,6 +240,9 @@ function EventsGrid({ events, totalResults }) {
 
                             <p style={{ fontSize: '14px', marginBottom: '4px' }}>
                                 <b>Датум:</b> {new Date(event.startDate).toLocaleDateString('mk-MK')}
+                                {event.endDate && (
+                                    <> - {new Date(event.endDate).toLocaleDateString('mk-MK')}</>
+                                )}
                             </p>
 
                             <p style={{ fontSize: '14px', marginBottom: '12px' }}>
@@ -359,6 +362,20 @@ export default function SearchPage() {
 
 
     const fetchEvents = async () => {
+        const hasFilters = keyword.trim() !== "" ||
+            category !== "" ||
+            faculty !== "" ||
+            date !== "" ||
+            selectedLocation !== "";
+
+        if (!hasFilters) {
+            setEvents([]);
+            setTotalPages(0);
+            setTotalResults(0);
+            //setHasSearched(false);
+            return;
+        }
+
         let url = `http://localhost:9091/api/event/public/filtered-events?keyword=${keyword}&page=${page}&size=${size}`;
         if(category) url += `&categoryId=${category}`;
         if (faculty) url += `&facultyId=${faculty}`;

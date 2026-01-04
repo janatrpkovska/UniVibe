@@ -11,6 +11,7 @@ import com.univibe.backend.service.EventTypeService;
 import com.univibe.backend.service.FacultyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -104,6 +105,17 @@ public class EventController {
                                          @RequestParam(required = false) String date,
                                          @RequestParam(defaultValue = "0") int page,
                                          @RequestParam(defaultValue = "10") int size) {
+        boolean noFilters = (keyword == null || keyword.trim().isEmpty()) &&
+                categoryId == null &&
+                eventTypeId == null &&
+                facultyId == null &&
+                (location == null || location.trim().isEmpty()) &&
+                (date == null || date.trim().isEmpty());
+
+        if (noFilters) {
+            return Page.empty(PageRequest.of(page, size));
+        }
+
         EventFilterDTO filter = new EventFilterDTO();
         filter.setKeyword(keyword);
         filter.setLocation(location);
