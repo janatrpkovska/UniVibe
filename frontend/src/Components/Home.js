@@ -267,7 +267,7 @@ export default function Home() {
       </Container>
       <section
         style={{
-          background: "#c7e3ffff",
+          background: "#D3D3D3",
           padding: "60px 20px",
           display: "flex",
           justifyContent: "center",
@@ -301,6 +301,37 @@ export default function Home() {
           </div>
         ))}
       </section>
+        <section style={{
+            background: "#c7e3ffff",
+            color: "black",
+            padding: "60px 20px",
+            textAlign: "center",
+        }}>
+            <Container>
+                <h2 style={{ fontSize: "42px", fontWeight: "900", marginBottom: "20px" }}>
+                    Сакаш да додадеш настан?
+                </h2>
+                <p style={{ fontSize: "20px", maxWidth: "800px", margin: "0 auto 30px" }}>
+                    Ако организирате универзитетски настан и сакате да го објавите на UniVibe,<br />
+                    контактирајте нè и ние ќе го додадеме за Вас!
+                </p>
+                <Button
+                    variant="dark"
+                    size="lg"
+                    href="mailto:univibe2025@yahoo.com"
+                    style={{
+                        backgroundColor: "#ffcc33",
+                        border: "none",
+                        color: "black",
+                        borderRadius: "10px",
+                        padding: "12px 40px",
+                        fontSize: "18px",
+                    }}
+                >
+                    Пријави настан
+                </Button>
+            </Container>
+        </section>
     </>
   );
 }

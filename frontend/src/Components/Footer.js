@@ -1,5 +1,5 @@
 import { Container, Button } from 'react-bootstrap'
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import {FaFacebook, FaInstagram, FaTwitter, FaYahoo} from "react-icons/fa";
 
 export default function Footer(){
     return(
@@ -14,8 +14,11 @@ export default function Footer(){
                 <FaInstagram size={30} color="#E1306C" />
                 <FaFacebook size={30} color="#547fffff" />
                 <FaTwitter size={30} color="#69cdffff" />
+                <a href="mailto:univibe2025@yahoo.com" >
+                    <FaYahoo size={30} color="#6B2FB9" />
+                </a>
             </div>
-            <div>Претплатете се на нашиот билтен <input
+            <div>Не пропуштајте универзитетски настани <input
                 placeholder="example@example.com"
                 style={{
                     width: "50%",
