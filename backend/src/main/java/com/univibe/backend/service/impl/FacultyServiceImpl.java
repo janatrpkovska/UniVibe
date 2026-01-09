@@ -19,6 +19,11 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
+    public Faculty findByName(String name) {
+        return facultyJpaRepository.findByName(name);
+    }
+
+    @Override
     public Faculty createFaculty(String name) {
         Faculty faculty = new Faculty();
         faculty.setName(name);

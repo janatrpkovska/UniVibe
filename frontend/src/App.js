@@ -13,11 +13,15 @@ import Register from "./Components/Register";
 import ScrollToHash from "./ScrollToHash";
 
 import "./App.css";
-import { AuthProvider } from "./util/AuthProvider";
+import { AuthProvider, useAuth } from "./util/AuthProvider";
 
 function FloatingAddEventButton() {
   const location = useLocation();
+  const { user, isAuthenticated } = useAuth();
+  const isAdmin = user && user.role === "ROLE_ADMIN";
+
   if (location.pathname === "/events/new") return null;
+  if (!isAuthenticated || !isAdmin) return null;
 
   return (
     <Link to="/events/new" className="fab-add-event" aria-label="Додај настан">

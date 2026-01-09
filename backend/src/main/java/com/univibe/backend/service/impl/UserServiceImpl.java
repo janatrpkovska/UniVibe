@@ -27,6 +27,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public User findByUsername(String username) {
+        return this.userJpaRepository.findByUsername(username).orElse(null);
+    }
+
+    @Override
     public User create(String username, String password, String email, String firstName, String lastName, Role role) {
         User user = new User();
         user.setUsername(username);

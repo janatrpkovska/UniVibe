@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface FacultyService {
     Faculty findById(Long id);
+    Faculty findByName(String name);
     Faculty createFaculty(String name);
     Faculty updateFaculty(Long id, String name);
     List<Faculty> findAll();

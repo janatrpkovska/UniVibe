@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Form, Button, Container, Alert, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../util/AuthProvider";
 
 const CATEGORY_OPTIONS = [
   { id: "tech", name: "Технологија" },
@@ -12,6 +13,12 @@ const CATEGORY_OPTIONS = [
   { id: "edu", name: "Едукација" },
   { id: "workshops", name: "Работилници" },
 ];
+
+// Map category ID to name
+const getCategoryName = (categoryId) => {
+  const category = CATEGORY_OPTIONS.find(c => c.id === categoryId);
+  return category ? category.name : "";
+};
 
 const EVENT_TYPE_OPTIONS = [
   { id: "party", label: "Забава / Party" },
@@ -42,6 +49,18 @@ export default function AddEventForm() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { token, user, isAuthenticated } = useAuth();
+
+  // Check if user is admin
+  const isAdmin = user && user.role === "ROLE_ADMIN";
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setError("Мора да бидете најавени за да додадете настан.");
+    } else if (!isAdmin) {
+      setError("Само администратори можат да додаваат настани.");
+    }
+  }, [isAuthenticated, isAdmin]);
 
   const selectedTypeLabel = useMemo(() => {
     const found = EVENT_TYPE_OPTIONS.find((t) => t.id === form.eventTypeId);
@@ -93,6 +112,11 @@ export default function AddEventForm() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
+    if (!isAuthenticated || !isAdmin) {
+      setError("Само администратори можат да додаваат настани.");
+      return;
+    }
+
     const msg = validate();
     if (msg) return setError(msg);
 
@@ -102,6 +126,7 @@ export default function AddEventForm() {
 
     try {
       const eventType = normalizeType();
+      const categoryName = getCategoryName(form.categoryId);
 
       const payload = {
         title: form.title.trim(),
@@ -109,46 +134,68 @@ export default function AddEventForm() {
         date: form.date,
         time: form.time,
         location: form.location.trim(),
-        faculty: form.faculty.trim(),
-        categoryId: form.categoryId,
+        facultyName: form.faculty.trim() || null,
+        categoryName: categoryName,
+        eventTypeName: eventType,
+        imageUrl: form.imageUrl.trim() || null,
         mode: form.mode,
-        eventType,
-        imageUrl: form.imageUrl.trim(),
-        dateTime: `${form.date}T${form.time}:00`,
       };
 
       const API_URL = process.env.REACT_APP_API_URL
-        ? `${process.env.REACT_APP_API_URL}/events`
-        : null;
+        ? `${process.env.REACT_APP_API_URL}/api/event/events`
+        : "http://localhost:9091/api/event/events";
 
-      if (!API_URL) {
-        saveLocal(payload);
-        setSuccess("Настанот е додаден (локално, додека backend не е готов).");
-        setForm(initialForm);
-        navigate(`/categories/${payload.categoryId}`);
-        return;
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
       }
 
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
         body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
         const text = await res.text();
+        if (res.status === 403) {
+          throw new Error("Немате дозвола за да додадете настан. Само администратори можат да додаваат настани.");
+        }
         throw new Error(text || "Грешка при додавање на настан.");
       }
 
       setSuccess("Настанот е успешно додаден!");
       setForm(initialForm);
-      navigate(`/categories/${payload.categoryId}`);
+      navigate(`/categories/${form.categoryId}`);
     } catch (err) {
       setError(err?.message || "Нешто тргна наопаку.");
     } finally {
       setLoading(false);
     }
   };
+
+  if (!isAuthenticated) {
+    return (
+      <Container style={{ maxWidth: 760 }} className="py-4">
+        <Alert variant="warning">
+          Мора да бидете најавени за да додадете настан. <a href="/login">Најавете се</a>
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <Container style={{ maxWidth: 760 }} className="py-4">
+        <Alert variant="danger">
+          Само администратори можат да додаваат настани.
+        </Alert>
+      </Container>
+    );
+  }
 
   return (
     <Container style={{ maxWidth: 760 }} className="py-4">

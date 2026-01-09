@@ -1,10 +1,12 @@
 package com.univibe.backend.web;
 
+import com.univibe.backend.dto.CreateEventRequest;
 import com.univibe.backend.dto.EventFilterDTO;
 import com.univibe.backend.dto.EventRequest;
 import com.univibe.backend.model.Category;
 import com.univibe.backend.model.Event;
 import com.univibe.backend.model.EventType;
+import com.univibe.backend.model.Faculty;
 import com.univibe.backend.service.CategoryService;
 import com.univibe.backend.service.EventService;
 import com.univibe.backend.service.EventTypeService;
@@ -13,11 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,6 @@ public class EventController {
 
     @GetMapping("/public/get-events")
     public List<Event> getAllEvents() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return eventService.findAll();
     }
 
@@ -70,6 +70,50 @@ public class EventController {
                 eventRequest.getCategory(),
                 eventRequest.getEventType(),
                 eventRequest.getFaculty()
+        );
+    }
+
+    @PostMapping("/events")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Event createEventSimple(@RequestBody CreateEventRequest request) {
+        // Parse date and time
+        LocalDateTime startDate = LocalDateTime.parse(request.getDate() + "T" + request.getTime() + ":00");
+        LocalDate endDate = LocalDate.parse(request.getDate());
+
+        // Look up or create category
+        Category category = categoryService.getCategoryByName(request.getCategoryName());
+        if (category == null) {
+            // Create category if it doesn't exist
+            category = categoryService.addCategory(request.getCategoryName(), "");
+        }
+
+        // Look up or create event type
+        EventType eventType = eventTypeService.findEventTypeByName(request.getEventTypeName());
+        if (eventType == null) {
+            // Create event type if it doesn't exist
+            eventType = eventTypeService.createEventType(request.getEventTypeName());
+        }
+
+        // Look up or create faculty (optional)
+        Faculty faculty = null;
+        if (request.getFacultyName() != null && !request.getFacultyName().trim().isEmpty()) {
+            faculty = facultyService.findByName(request.getFacultyName());
+            if (faculty == null) {
+                // Create faculty if it doesn't exist
+                faculty = facultyService.createFaculty(request.getFacultyName());
+            }
+        }
+
+        return this.eventService.createEvent(
+                request.getTitle(),
+                request.getDescription(),
+                startDate,
+                endDate,
+                request.getLocation(),
+                request.getImageUrl(),
+                category,
+                eventType,
+                faculty
         );
     }
 
