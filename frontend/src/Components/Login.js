@@ -9,6 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const { login } = useAuth()
   const navigate = useNavigate()
+  const [ wrongCredentials, setWrongCredentials ] = useState(false)
 
 
   const handleSubmit = async (e) => {
@@ -22,7 +23,9 @@ const Login = () => {
       login(res.data)
       navigate("/")
     }
-    ).catch(err=>console.error(err))
+    ).catch(err=>
+      setWrongCredentials(true)
+    )
   };
 
   return (
@@ -44,13 +47,12 @@ const Login = () => {
 
           <h2>Најави се</h2>
           <p className="subtitle"></p>
-
           <form onSubmit={handleSubmit}>
             <input
               type="text"
               placeholder="Внесете корисничко име"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => {setUsername(e.target.value); setWrongCredentials(false)}}
               required
             />
 
@@ -58,9 +60,13 @@ const Login = () => {
               type="password"
               placeholder="Лозинка"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {setPassword(e.target.value); setWrongCredentials(false)}}
               required
             />
+            {
+              wrongCredentials &&
+              <div style={{color: 'red'}}>Погрешни податоци!</div>
+            } 
 
             <button type="submit">Најави се</button>
           </form>
