@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { Container, Image, Button } from "react-bootstrap";
 import { useEffect, useRef } from "react";
 import "./CategoryEvents.css";
@@ -37,7 +37,7 @@ function EventCard() {
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "4rem" }}>
-      {events.map((event, index) => (
+      {events.map((event) => (
         <section className="events-grid">
           <article key={event.id} className="event-card">
             <div className="event-image" style={{ objectFit: "cover" }}>
@@ -81,6 +81,11 @@ function EventCard() {
 
 export default function Home() {
   const statsRef = useRef([]);
+  const navigate = useNavigate();
+
+  const goToSearchForm = () => {
+      navigate("/search", { state: { scrollToTop: true } });
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -249,8 +254,7 @@ export default function Home() {
         <EventCard />
         <Button
           type="button"
-          as={Link}
-          to="/search"
+          onClick={goToSearchForm}
           style={{
             backgroundColor: "#ffcc33",
             color: "black",

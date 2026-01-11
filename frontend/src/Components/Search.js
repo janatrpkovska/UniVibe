@@ -486,6 +486,18 @@ export default function SearchPage() {
     }
   }, [location.state]);
 
+  useEffect(() => {
+      if (location.state?.scrollToTop) {
+          requestAnimationFrame(() => {
+              window.scrollTo({
+                  top: 0,
+                  behavior: "smooth"
+              });
+          });
+      }
+  }, [location.pathname]);
+
+
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#f9fafb" }}>
       <StudentsSection />
