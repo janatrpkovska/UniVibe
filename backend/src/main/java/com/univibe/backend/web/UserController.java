@@ -2,6 +2,7 @@ package com.univibe.backend.web;
 
 import com.univibe.backend.dto.PasswordChangeRequest;
 import com.univibe.backend.dto.UserDTO;
+import com.univibe.backend.model.Role;
 import com.univibe.backend.model.User;
 import com.univibe.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,9 @@ public class UserController {
                 user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getRole()
+                Role.ROLE_USER,
+                user.getTelephone(),
+                user.getCity()
         );
 
         UserDTO createdUserDTO = new UserDTO();
@@ -37,6 +40,8 @@ public class UserController {
         createdUserDTO.setLastName(createdUser.getLastName());
         createdUserDTO.setRole(createdUser.getRole());
         createdUserDTO.setUsername(createdUser.getUsername());
+        createdUserDTO.setCity(createdUser.getCity());
+        createdUserDTO.setTelephone(createdUser.getTelephone());
         return createdUserDTO;
     }
 
@@ -51,7 +56,9 @@ public class UserController {
                 userDTO.getEmail(),
                 userDTO.getFirstName(),
                 userDTO.getLastName(),
-                userDTO.getRole()
+                userDTO.getRole(),
+                userDTO.getTelephone(),
+                userDTO.getCity()
         );
 
         UserDTO updatedUserDTO = new UserDTO();
@@ -61,6 +68,8 @@ public class UserController {
         updatedUserDTO.setLastName(updatedUser.getLastName());
         updatedUserDTO.setRole(updatedUser.getRole());
         updatedUserDTO.setUsername(updatedUser.getUsername());
+        updatedUserDTO.setCity(updatedUser.getCity());
+        updatedUserDTO.setTelephone(updatedUser.getTelephone());
         return updatedUserDTO;
     }
 

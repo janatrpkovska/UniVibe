@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User create(String username, String password, String email, String firstName, String lastName, Role role) {
+    public User create(String username, String password, String email, String firstName, String lastName, Role role,  String telephone, String city) {
         User user = new User();
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
@@ -40,11 +40,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setRole(role);
+        user.setTelephone(telephone);
+        user.setCity(city);
         return userJpaRepository.save(user);
     }
 
     @Override
-    public User update(Long id, String username, String email, String firstName, String lastName, Role role) {
+    public User update(Long id, String username, String email, String firstName, String lastName, Role role, String  telephone, String city) {
         User user = this.findById(id);
 
         user.setUsername(username);
@@ -52,6 +54,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setRole(role);
+        user.setTelephone(telephone);
+        user.setCity(city);
 
         return userJpaRepository.save(user);
     }

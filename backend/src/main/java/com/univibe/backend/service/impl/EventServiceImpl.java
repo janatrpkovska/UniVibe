@@ -128,4 +128,9 @@ public class EventServiceImpl implements EventService {
 
         return eventJpaRepository.findAll(spec, pageable);
     }
+
+    @Override
+    public List<Event> getLatestEvents() {
+        return eventJpaRepository.findAllByOrderByStartDateDesc().subList(0,3);
+    }
 }

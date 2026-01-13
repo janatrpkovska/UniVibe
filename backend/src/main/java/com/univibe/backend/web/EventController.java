@@ -36,6 +36,11 @@ public class EventController {
         return eventService.findAll();
     }
 
+    @GetMapping("/public/get-latest")
+    public List<Event> getLatestEvents() {
+        return eventService.getLatestEvents();
+    }
+
     @GetMapping("/public/get-event/{id}")
     public Event getEventById(@PathVariable Long id) {
         return eventService.findById(id);

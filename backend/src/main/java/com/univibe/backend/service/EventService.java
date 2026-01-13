@@ -16,4 +16,5 @@ public interface EventService {
     List<Event> findAll();
     List<Event> findAllByCategory(Category category);
     Page<Event> filteredEvents (EventFilterDTO eventFilterDTO);
+    List<Event> getLatestEvents();
 }

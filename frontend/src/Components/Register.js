@@ -1,25 +1,68 @@
+import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const [form, setForm] = useState({
-    FirstName: "",
-    LastName: "",
-    email: "",
-    phone: "",
-    country: "",
-    city: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const [ firstName, setFirstName ] = useState("")
+  const [ lastName, setLastName ] = useState("")
+  const [ email, setEmail ] = useState("")
+  const [ username, setUsername ] = useState("")
+  const [ telephone, setTelephone ] = useState ("")
+  const [ city, setCity] = useState("")
+  const [ password, setPassword] = useState("")
+  const [ invalidTelephone, setInvalidTelephone ] = useState(false)
+  const [ notSamePassword, setNotSamePassword] = useState(false)
+  const [ wrongData, setWrongData ] = useState(false)
+  const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form);
+
+    const body = {
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      username: username,
+      telephone: telephone,
+      city: city,
+      password: password
+    }
+    if(invalidTelephone || notSamePassword)
+      setWrongData(true)
+    else{
+      axios.post("http://localhost:9091/api/user/public/create-user", body).then(res=>{if(res.status===200) navigate('/')}
+      ).catch(error=>console.error(error))
+    }
   };
+
+  const checkPhoneNumber = (telephone) =>{
+    if(telephone.length===0){
+      setInvalidTelephone(false)
+      return
+    }
+    if (/^\d+$/.test(telephone)) {
+      if(telephone.charAt(0)!== '0' && telephone.charAt(1)!=='7'){
+        setInvalidTelephone(true)
+      }
+      else{
+        if(telephone.length !== 9)
+          setInvalidTelephone(true)
+        else{
+          setInvalidTelephone(false)
+        }
+      }
+    } else {
+      setInvalidTelephone(true);
+    }
+  }
+
+  const checkPassword = (confirmPassword) => {
+    if(password !== confirmPassword && confirmPassword.length>0)
+      setNotSamePassword(true)
+    else{
+      setNotSamePassword(false)
+    }
+  }
 
   return (
     <div className="register-wrapper">
@@ -36,17 +79,18 @@ const Register = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="grid">
-              <input name="fullName" placeholder="Име" onChange={handleChange} required />
-              <input name="position" placeholder="Презиме" onChange={handleChange} />
+              <input name="fullName" placeholder="Име" onChange={(e)=>setFirstName(e.target.value)} required />
+              <input name="position" placeholder="Презиме" onChange={(e)=>setLastName(e.target.value)} />
 
-              <input type="email" name="email" placeholder="Е-пошта" onChange={handleChange} required />
-              <input name="phone" placeholder="Телефон" onChange={handleChange} />
+              <input type="email" name="email" placeholder="Е-пошта" onChange={(e)=>setEmail(e.target.value)} required />
+              <input name="username" placeholder="Корисничко име" onChange={(e)=>setUsername(e.target.value)} />
 
-              <input name="country" placeholder="Држава" onChange={handleChange} />
-              <input name="city" placeholder="Град" onChange={handleChange} />
+              <input name="phone" style={{outline: invalidTelephone?'2px solid red':''}} placeholder="Телефон (07x)" onChange={(e)=>{setTelephone(e.target.value); checkPhoneNumber(e.target.value)}} />
+              <input name="city" placeholder="Град" onChange={(e)=>setCity(e.target.value)} />
 
-              <input type="password" name="Password" placeholder="Лозинка" onChange={handleChange} required />
-              <input type="password" name="Confirm-password" placeholder="Повтори лозинка" onChange={handleChange} required />
+              <input type="password" name="Password" placeholder="Лозинка" onChange={(e)=>setPassword(e.target.value)} required />
+              <input type="password" style={{outline: notSamePassword?'2px solid red':''}} name="Confirm-password" placeholder="Повтори лозинка" onChange={(e)=>checkPassword(e.target.value)} required />
+              {wrongData && <div style={{color: 'red'}}>Погрешни податоци!</div>}
             </div>
 
             <div className="gender">
