@@ -1,0 +1,492 @@
+/* ==========================
+   UniVibe Assistant - FULL CSS
+   ========================== */
+
+/* ------------- Floating Button (FAB) ------------- */
+.uv-chat-fab {
+  position: fixed;
+  right: 50px;
+  bottom: 250px;
+
+  width: 86px;
+  height: 86px;
+
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  z-index: 9999;
+
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.20);
+
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  /* IMPORTANT: pulse must not be cut */
+  overflow: visible;
+}
+
+.uv-chat-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.24);
+}
+
+.uv-chat-fab-inner {
+  position: relative; /* dot positions relative to this */
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: visible; /* keep pulse visible */
+}
+
+.uv-chat-fab-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+/* Online dot */
+.uv-chat-fab-dot {
+  position: absolute;
+
+  /* dot near the head */
+  top: 12px;
+  right: 16px;
+
+  width: 16px;
+  height: 16px;
+
+  border-radius: 50%;
+  background: #2bdc4a;
+
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  z-index: 10;
+
+  /* pulse */
+  box-shadow: 0 0 0 0 rgba(43, 220, 74, 0.5);
+  animation: uvOnlinePulse 1.3s infinite;
+}
+
+@keyframes uvOnlinePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(43, 220, 74, 0.55);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 14px rgba(43, 220, 74, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(43, 220, 74, 0);
+  }
+}
+
+/* Speech bubble (preview text) */
+.uv-chat-fab-bubble {
+  position: absolute;
+  right: 92px;
+  bottom: 16px;
+
+  background: rgba(255, 255, 255, 0.95);
+  color: #0c1b3a;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 10px 12px;
+
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+
+  white-space: nowrap;
+
+  animation: uvBubbleFloat 2s ease-in-out infinite;
+}
+
+.uv-chat-fab-bubble::after {
+  content: "";
+  position: absolute;
+  right: -8px;
+  bottom: 14px;
+
+  width: 0;
+  height: 0;
+
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 10px solid rgba(255, 255, 255, 0.95);
+}
+
+@keyframes uvBubbleFloat {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* ------------- Chat Window ------------- */
+.uv-chat-window {
+  position: fixed;
+  right: 22px;
+  bottom: 120px;
+
+  width: 380px;
+  height: 560px;
+
+  border-radius: 18px;
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* ------------- Header ------------- */
+.uv-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 14px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(145, 171, 218, 0.95),
+    rgba(255, 204, 77, 0.45)
+  );
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.uv-chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.uv-chat-header-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.75);
+  padding: 5px;
+}
+
+.uv-chat-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.uv-chat-title {
+  font-weight: 900;
+  color: #0b1f44;
+  font-size: 16px;
+  line-height: 1.1;
+}
+
+.uv-chat-subtitle {
+  font-size: 13px;
+  color: rgba(11, 31, 68, 0.8);
+}
+
+.uv-chat-close {
+  width: 38px;
+  height: 38px;
+
+  border: none;
+  border-radius: 12px;
+
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.60);
+  transition: 0.15s ease;
+
+  font-size: 18px;
+  font-weight: 900;
+  color: #0b1f44;
+
+  display: grid;
+  place-items: center;
+}
+
+.uv-chat-close:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* ------------- Body ------------- */
+.uv-chat-body {
+  padding: 12px;
+  flex: 1;
+
+  /* за да работат scroll зоните */
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  background: #f6f9ff;
+}
+
+/* ------------- Quick questions box ------------- */
+.uv-quick {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(145, 171, 218, 0.20);
+  border-radius: 14px;
+  padding: 12px;
+
+  /* allow scroll if many questions */
+  max-height: 230px;
+  overflow-y: auto;
+}
+
+.uv-quick-title {
+  font-size: 14px;
+  font-weight: 900;
+  color: #0b1f44;
+  margin-bottom: 10px;
+}
+
+.uv-quick-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.uv-quick-btn {
+  text-align: left;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 14px;
+
+  background: rgba(145, 171, 218, 0.10);
+  color: #0b1f44;
+  transition: 0.12s ease;
+}
+
+.uv-quick-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Button "Други прашања"
+   IMPORTANT: in JS this is className="uv-other-btn"
+   so we style uv-other-btn (NOT uv-quick-more) */
+.uv-other-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 12px;
+
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+
+  font-weight: 900;
+  font-size: 14px;
+
+  background: rgba(255, 204, 77, 0.85);
+  color: #0b1f44;
+  transition: 0.15s ease;
+}
+
+.uv-other-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 204, 77, 0.95);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.10);
+}
+
+/* ------------- Messages area ------------- */
+.uv-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2px 2px 10px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* nicer scroll */
+.uv-messages::-webkit-scrollbar,
+.uv-quick::-webkit-scrollbar,
+.uv-allfaq::-webkit-scrollbar {
+  width: 8px;
+}
+.uv-messages::-webkit-scrollbar-thumb,
+.uv-quick::-webkit-scrollbar-thumb,
+.uv-allfaq::-webkit-scrollbar-thumb {
+  background: #cfe3ff;
+  border-radius: 20px;
+}
+
+.uv-msg-row {
+  display: flex;
+}
+
+.uv-left {
+  justify-content: flex-start;
+}
+.uv-right {
+  justify-content: flex-end;
+}
+
+/* message bubble */
+.uv-msg {
+  max-width: 82%;
+  padding: 12px 14px;
+  border-radius: 16px;
+
+  font-size: 15px; /* bigger text */
+  line-height: 1.45;
+
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.uv-bot {
+  background: rgba(145, 171, 218, 0.14);
+  border: 1px solid rgba(145, 171, 218, 0.20);
+  color: #0b1f44;
+  border-bottom-left-radius: 8px;
+}
+
+.uv-user {
+  background: rgba(255, 204, 77, 0.90);
+  color: #0b1f44;
+  border: 1px solid rgba(255, 204, 77, 0.25);
+
+  font-weight: 900;
+  border-bottom-right-radius: 8px;
+}
+
+/* Inline "Други прашања" button inside a message */
+.uv-inline-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px 12px;
+
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+
+  background: rgba(11, 31, 68, 0.92);
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 14px;
+
+  transition: 0.15s ease;
+}
+
+.uv-inline-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(11, 31, 68, 1);
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.18);
+}
+
+/* All FAQ list inside chat */
+.uv-allfaq {
+  margin-top: 10px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  max-height: 240px;
+  overflow-y: auto;
+
+  padding-right: 6px;
+}
+
+.uv-allfaq-btn {
+  text-align: left;
+
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 14px;
+
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 750;
+  color: #0b1f44;
+  cursor: pointer;
+
+  transition: 0.12s ease;
+}
+
+.uv-allfaq-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+}
+
+/* ------------- Input ------------- */
+.uv-chat-input {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+
+  background: rgba(255, 255, 255, 0.98);
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.uv-input {
+  flex: 1;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+
+  padding: 0 14px;
+  outline: none;
+
+  font-size: 15px; /* bigger input text */
+}
+
+.uv-input:focus {
+  border-color: rgba(145, 171, 218, 0.70);
+  box-shadow: 0 0 0 5px rgba(145, 171, 218, 0.18);
+}
+
+.uv-send {
+  width: 54px;
+  height: 46px;
+
+  border: none;
+  border-radius: 14px;
+
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 900;
+
+  background: rgba(255, 204, 77, 0.95);
+  color: #0b1f44;
+  box-shadow: 0 12px 18px rgba(0, 0, 0, 0.18);
+}
+
+.uv-inline-icon{
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 6px;
+}
