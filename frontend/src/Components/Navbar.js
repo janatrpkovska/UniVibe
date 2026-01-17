@@ -1,10 +1,12 @@
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../util/AuthProvider";
 
 function SiteNavbar() {
-  const { isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
   const navStyle = ({ isActive }) => ({
     backgroundColor: isActive ? "#EBC042" : "transparent",
     color: isActive ? "#ffffff" : "black",
@@ -13,18 +15,22 @@ function SiteNavbar() {
     padding: "6px 30px",
   });
 
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <Navbar expand="lg" bg="light" className="shadow-sm px-2 py-0">
-      
       <Navbar.Brand className="me-auto">
         <NavLink to="/">
-        <img
-          src="/logo.png"
-          width="60"
-          height="60"
-          className="d-inline-block align-top"
-          alt="Logo"
-        />
+          <img
+            src="/logo.png"
+            width="60"
+            height="60"
+            className="d-inline-block align-top"
+            alt="Logo"
+          />
         </NavLink>
       </Navbar.Brand>
 
@@ -54,8 +60,9 @@ function SiteNavbar() {
             За нас
           </Nav.Link>
         </Nav>
-        {
-          !isAuthenticated ? (<NavLink to="/login" style={{ textDecoration: "none" }}>
+
+        {!isAuthenticated ? (
+          <NavLink to="/login" style={{ textDecoration: "none" }}>
             <button
               className="btn"
               style={{
@@ -69,22 +76,23 @@ function SiteNavbar() {
             >
               Најави се
             </button>
-          </NavLink>):<button
-              className="btn"
-              style={{
-                backgroundColor: "#EBC042",
-                color: "black",
-                borderRadius: "10px",
-                padding: "6px 20px",
-                fontWeight: "600",
-                marginLeft: "-10vh",
-              }}
-              onClick={()=>logout()}
-            >
-              Одјави се
-            </button>
-        }
-          
+          </NavLink>
+        ) : (
+          <button
+            className="btn"
+            style={{
+              backgroundColor: "#EBC042",
+              color: "black",
+              borderRadius: "10px",
+              padding: "6px 20px",
+              fontWeight: "600",
+              marginLeft: "-10vh",
+            }}
+            onClick={handleLogout}
+          >
+            Одјави се
+          </button>
+        )}
       </Navbar.Collapse>
     </Navbar>
   );

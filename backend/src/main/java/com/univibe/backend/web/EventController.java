@@ -44,8 +44,13 @@ public class EventController {
     @GetMapping("/public/get-events/category")
     public List<Event> getEventsByCategory(@RequestParam String category) {
         Category category1 = categoryService.getCategoryByName(category);
-
         return eventService.findAllByCategory(category1);
+    }
+
+    @GetMapping("/public/get-events/category/{categoryId}")
+    public List<Event> getEventsByCategoryId(@PathVariable Long categoryId) {
+        Category category = categoryService.getCategoryById(categoryId);
+        return eventService.findAllByCategory(category);
     }
 
     @GetMapping("/public/locations")
@@ -105,6 +110,7 @@ public class EventController {
                                          @RequestParam(required = false) String date,
                                          @RequestParam(defaultValue = "0") int page,
                                          @RequestParam(defaultValue = "10") int size) {
+
         boolean noFilters = (keyword == null || keyword.trim().isEmpty()) &&
                 categoryId == null &&
                 eventTypeId == null &&

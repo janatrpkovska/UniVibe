@@ -1,4 +1,11 @@
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useLocation,
+  Navigate,
+} from "react-router-dom";
 
 import Home from "./Components/Home";
 import About from "./Components/AboutUs";
@@ -13,12 +20,29 @@ import Register from "./Components/Register";
 import ScrollToHash from "./ScrollToHash";
 import Event from "./Components/Event";
 
-
 import "./App.css";
-import { AuthProvider } from "./util/AuthProvider";
+import { AuthProvider, useAuth } from "./util/AuthProvider";
+
+
+function ProtectedRoute({ children }) {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
 
 function FloatingAddEventButton() {
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
+
+ 
+  if (!isAuthenticated) return null;
+
+
   if (location.pathname === "/events/new") return null;
 
   return (
@@ -32,23 +56,32 @@ function AppRoutes() {
   return (
     <>
       <AuthProvider>
-      <SiteNavbar />
-      <FloatingAddEventButton />
+        <SiteNavbar />
+        <FloatingAddEventButton />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about-us" element={<About />} />
-        <Route path="/choose-category" element={<ChooseCategory />} />
-        <Route path="/categories/:categoryId" element={<CategoryEvents />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/events/new" element={<AddEventForm />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/event/:id" element={<Event />} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about-us" element={<About />} />
+          <Route path="/choose-category" element={<ChooseCategory />} />
+          <Route path="/categories/:categoryId" element={<CategoryEvents />} />
+          <Route path="/search" element={<Search />} />
 
-      </Routes>
+      
+          <Route
+            path="/events/new"
+            element={
+              <ProtectedRoute>
+                <AddEventForm />
+              </ProtectedRoute>
+            }
+          />
 
-      <Footer />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/event/:id" element={<Event />} />
+        </Routes>
+
+        <Footer />
       </AuthProvider>
     </>
   );
