@@ -22,6 +22,9 @@ import Event from "./Components/Event";
 
 import "./App.css";
 import { AuthProvider, useAuth } from "./util/AuthProvider";
+import UniVibeAssistant from "./Components/UniVibeAssistant";
+
+
 
 
 function ProtectedRoute({ children }) {
@@ -83,6 +86,9 @@ function AppRoutes() {
 
         <Footer />
       </AuthProvider>
+
+<UniVibeAssistant />
+
     </>
   );
 }
