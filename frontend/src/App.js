@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
-
 import Home from "./Components/Home";
 import About from "./Components/AboutUs";
 import ChooseCategory from "./Components/ChooseCategory";
@@ -11,12 +10,9 @@ import AddEventForm from "./Components/AddEventForm";
 import Login from "./Components/Login";
 import Register from "./Components/Register";
 import ScrollToHash from "./ScrollToHash";
-
 import "./App.css";
 import { AuthProvider, useAuth } from "./util/AuthProvider";
 import UniVibeAssistant from "./Components/UniVibeAssistant";
-
-
 
 function FloatingAddEventButton() {
   const location = useLocation();
@@ -37,25 +33,21 @@ function AppRoutes() {
   return (
     <>
       <AuthProvider>
-      <SiteNavbar />
-      <FloatingAddEventButton />
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about-us" element={<About />} />
-        <Route path="/choose-category" element={<ChooseCategory />} />
-        <Route path="/categories/:categoryId" element={<CategoryEvents />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/events/new" element={<AddEventForm />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-
-      <Footer />
+          <SiteNavbar />
+          <FloatingAddEventButton />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about-us" element={<About />} />
+            <Route path="/choose-category" element={<ChooseCategory />} />
+            <Route path="/categories/:categoryId" element={<CategoryEvents />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/events/new" element={<AddEventForm />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+          <Footer />
+          <UniVibeAssistant />
       </AuthProvider>
-
-<UniVibeAssistant />
-
     </>
   );
 }
