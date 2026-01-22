@@ -17,4 +17,6 @@ public interface EventService {
     List<Event> findAllByCategory(Category category);
     Page<Event> filteredEvents (EventFilterDTO eventFilterDTO);
     List<Event> getLatestEvents();
+    boolean existsByTitle(String title);
+    Event createScrapedEvent(String title, String description, LocalDateTime startDate, LocalDate endDate, String location, String image_url, Category category, EventType eventType, Faculty faculty, EventMode mode);
 }

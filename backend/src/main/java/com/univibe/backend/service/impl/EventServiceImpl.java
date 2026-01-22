@@ -37,6 +37,8 @@ public class EventServiceImpl implements EventService {
                 faculty
         );
 
+        event.setSource(EventSource.MANUAL);
+
         return eventJpaRepository.save(event);
     }
 
@@ -132,5 +134,30 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<Event> getLatestEvents() {
         return eventJpaRepository.findAllByOrderByStartDateDesc().subList(0,3);
+    }
+
+    @Override
+    public boolean existsByTitle(String title) {
+        return eventJpaRepository.existsByTitle(title);
+    }
+
+    @Override
+    public Event createScrapedEvent(String title, String description, LocalDateTime startDate, LocalDate endDate, String location, String image_url, Category category, EventType eventType, Faculty faculty, EventMode mode) {
+        Event event = new Event(
+                title,
+                description,
+                startDate,
+                endDate,
+                location,
+                image_url,
+                category,
+                eventType,
+                faculty
+        );
+
+        event.setSource(EventSource.SCRAPED);
+        event.setMode(mode);
+
+        return eventJpaRepository.save(event);
     }
 }

@@ -15,7 +15,7 @@ function EventCard() {
           setEvents(res.data)
           console.log(res.data);
         }
-        )
+        ).catch(err=>console.error(err))
     },[]
   )
 
