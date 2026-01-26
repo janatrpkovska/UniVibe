@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./UniVibeAssistant.css";
 
-
 function Icon({ name, alt }) {
   return <img src={`/icons/${name}`} alt={alt || name} className="uv-inline-icon" />;
 }
@@ -344,278 +343,299 @@ const FAQ = [
 // "најчести прашања"
 const TOP_5_IDS = ["cat_find", "filters_what", "details_open", "register_how", "no_results"];
 
-function normalizeText(text) {
-  return (text || "")
-    .toLowerCase()
-    .replace(/[.,!?;:()]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+const FAQ_GROUPS = [
+    { title: "Категории", ids: ["cat_find", "cat_no_events", "cat_types", "cat_best"] },
+    { title: "Филтри / Пребарување", ids: ["filters_where", "filters_what", "filters_keyword", "filters_date", "filters_faculty"] },
+    { title: "Детали", ids: ["details_open", "details_location", "details_mode", "details_type"] },
+    { title: "Пријава / регистрација", ids: ["register_how", "register_login", "register_no_button", "register_cost", "register_cancel"] },
+    { title: "Проблеми / Нема резултати", ids: ["no_results", "events_missing", "contact_help"] },
+    { title: "Профил", ids: ["profile_need", "profile_create"] },
+];
 
-function isNoneMessage(userMsg) {
-  const msg = normalizeText(userMsg);
-  const nonePhrases = [
-    "ниедно",
-    "ни едно",
-    "ниту едно",
-    "ништо",
-    "не ме интересира",
-    "не сакам",
-    "не треба",
-    "none",
-    "no",
-    "nema",
-    "nisto",
-    "nishto",
-    "nitu edno",
-  ];
-  return nonePhrases.includes(msg);
-}
+const normalizeText = (text) =>
+    (text || "")
+        .toLowerCase()
+        .replace(/[.,!?;:()]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 
-function matchFAQ(userMsg) {
-  const msg = normalizeText(userMsg);
+const isNoneMessage = (msg) => {
+    const nonePhrases = [
+        "ниедно",
+        "ни едно",
+        "ниту едно",
+        "ништо",
+        "не ме интересира",
+        "не сакам",
+        "не треба",
+        "none",
+        "no",
+        "nema",
+        "nisto",
+        "nishto",
+        "nitu edno",
+    ];
+    return nonePhrases.includes(normalizeText(msg));
+};
 
-  for (const item of FAQ) {
-    if (normalizeText(item.title) === msg) return item.id;
-  }
+const matchFAQ = (msg) => {
+    const text = normalizeText(msg);
 
-  if (msg.includes("категор")) return "cat_find";
-  if (msg.includes("филтр") || msg.includes("пребар")) return "filters_what";
-  if (msg.includes("детал")) return "details_open";
-  if (msg.includes("пријав") || msg.includes("регист") || msg.includes("register")) return "register_how";
-  if (msg.includes("универз") || msg.includes("факултет")) return "filters_faculty";
-  if (msg.includes("нема резултат") || msg.includes("не можам да најдам") || msg.includes("не наоѓа")) return "no_results";
-
-  for (const item of FAQ) {
-    for (const k of item.keywords) {
-      if (msg.includes(normalizeText(k))) return item.id;
+    // Check keywords first
+    for (const item of FAQ) {
+        for (const k of item.keywords) {
+            if (text.includes(normalizeText(k))) return item.id;
+        }
     }
-  }
 
-  return null;
-}
+    // Hardcoded fallback
+    if (text.match(/категор/i)) return "cat_find";
+    if (text.match(/филтр|пребар/i)) return "filters_what";
+    if (text.match(/детал/i)) return "details_open";
+    if (text.match(/пријав|регист|register/i)) return "register_how";
+    if (text.match(/универз|факултет/i)) return "filters_faculty";
+    if (text.match(/нема резултат|не можам да најдам|не наоѓа/i)) return "no_results";
+
+    return null;
+};
+
+const fetchAIResponse = async (question) => {
+    try {
+        const res = await fetch("http://localhost:9091/api/chatbot/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question }),
+        });
+        const data = await res.json();
+        return data.answer;
+    } catch (err) {
+        console.error("AI error:", err);
+        return "Се извинувам, имав проблем да добијам одговор. Пробај повторно.";
+    }
+};
 
 export default function UniVibeAssistant() {
-  const [open, setOpen] = useState(false);
-  const [showFaqPanel, setShowFaqPanel] = useState(true);
-  const [showAllFaqInChat, setShowAllFaqInChat] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [showFaqPanel, setShowFaqPanel] = useState(true);
+    const [showAllFaqInChat, setShowAllFaqInChat] = useState(false);
+    const messagesEndRef = useRef(null);
 
-  const initialMessage = useMemo(
-    () => ({
-      from: "bot",
-      text: (
-        <>
-          Здраво! Јас сум твој UniVibe Асистент.
-          <br />
-          Тука сум да ти помогнам со настани, пребарување и пријавување <Icon name="smiley_star.png" />
-        </>
-      ),
-      time: new Date(),
-    }),
-    []
-  );
-
-  const [messages, setMessages] = useState([initialMessage]);
-  const [input, setInput] = useState("");
-  const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    if (!open) return;
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, open, showAllFaqInChat]);
-
-  const top5 = useMemo(() => TOP_5_IDS.map((id) => FAQ.find((x) => x.id === id)).filter(Boolean), []);
-  const allFaq = useMemo(() => FAQ, []);
-
-  const botReply = (userText) => {
-    if (isNoneMessage(userText)) {
-      return (
-        <>
-          Нема проблем! <Icon name="smiley.png" />
-          <br />
-          Ако сакаш, кажи ми што ти треба и ќе ти помогнам.
-          <br />
-          <br />
-          Можеш да кликнеш и на „Други прашања“ за да ги видиш сите опции.
-        </>
-      );
-    }
-
-    const id = matchFAQ(userText);
-    if (id) {
-      const found = FAQ.find((x) => x.id === id);
-      return found?.answer || (
-        <>
-          Океј! Кажи ми што точно те интересира и ќе ти помогнам. <Icon name="tick.png" />
-        </>
-      );
-    }
-
-    return (
-      <>
-        Разбрав. <Icon name="smiley.png" />
-        <br />
-        За да ти помогнам најбрзо, пробај да напишеш:
-        <br />• Категорија (пример: „Технологија“)
-        <br />• Филтри (пример: „филтри по датум“)
-        <br />• Детали (пример: „детали за настан“)
-        <br />• Пријава (пример: „како да се пријавам“)
-        <br />
-        <br />
-        А можеш и да кликнеш „Други прашања“ <Icon name="star.png" />
-      </>
-    );
-  };
-
-  const sendMessage = (textToSend, options = { hideFaq: false }) => {
-    const trimmed = (textToSend ?? input).trim();
-    if (!trimmed) return;
-    if (options.hideFaq) setShowFaqPanel(false);
-
-    const userMsg = { from: "user", text: trimmed, time: new Date() };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
-
-    setTimeout(() => {
-      const replyContent = botReply(trimmed);
-      const botMsg = { from: "bot", text: replyContent, time: new Date() };
-      setMessages((prev) => [...prev, botMsg]);
-
-      setTimeout(() => {
-        const offerMsg = {
-          from: "bot",
-          text: (
+    const initialMessage = useMemo(() => ({
+        from: "bot",
+        text: (
             <>
-              Ако сакаш, можеш да видиш и други прашања <Icon name="search.png" />
+                Здраво! Јас сум твој UniVibe Асистент.
+                <br />
+                Тука сум да ти помогнам со настани, пребарување и пријавување <Icon name="smiley_star.png" />
             </>
-          ),
-          time: new Date(),
-          meta: { showFaqButton: true },
-        };
-        setMessages((prev) => [...prev, offerMsg]);
-      }, 250);
-    }, 420);
-  };
+        ),
+        time: new Date(),
+    }), []);
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    sendMessage(null, { hideFaq: true });
-  };
+    const [messages, setMessages] = useState([initialMessage]);
+    const [input, setInput] = useState("");
 
-  const handleTopQuestion = (faqItem) => {
-    sendMessage(faqItem.title, { hideFaq: true });
-  };
+    const top5 = useMemo(() => TOP_5_IDS.map((id) => FAQ.find((x) => x.id === id)).filter(Boolean), []);
+    const allFaq = useMemo(() => FAQ, []);
 
-  const handleShowAllFaq = () => {
-    setShowAllFaqInChat(true);
+    useEffect(() => {
+        if (open) messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages, open, showAllFaqInChat]);
 
-    const botMsg = {
-      from: "bot",
-      text: (
-        <>
-          Еве ги сите прашања што можеш да ги погледнеш <Icon name="smiley_star.png" />
-        </>
-      ),
-      time: new Date(),
-      meta: { showAllFaq: true },
+    const botReply = (userText) => {
+        if (isNoneMessage(userText)) {
+            return (
+                <>
+                    Нема проблем! <Icon name="smiley.png" />
+                    <br />
+                    Ако сакаш, кажи ми што ти треба и ќе ти помогнам.
+                    <br />
+                    <br />
+                    Можеш да кликнеш и на „Други прашања“ за да ги видиш сите опции.
+                </>
+            );
+        }
+        const faqId = matchFAQ(userText);
+        if (faqId) {
+            return FAQ.find((x) => x.id === faqId)?.answer;
+        }
+        return (
+            <>
+                Разбрав. <Icon name="smiley.png" />
+                <br />
+                За да ти помогнам најбрзо, пробај да напишеш:
+                <br />• Категорија (пример: „Технологија“)
+                <br />• Филтри (пример: „филтри по датум“)
+                <br />• Детали (пример: „детали за настан“)
+                <br />• Пријава (пример: „како да се пријавам“)
+                <br />
+                <br />
+                А можеш и да кликнеш „Други прашања“ <Icon name="star.png" />
+            </>
+        );
     };
 
-    setMessages((prev) => [...prev, botMsg]);
-    setShowFaqPanel(false);
-  };
+    const sendMessage = async (textToSend = input, { hideFaq = false } = {}) => {
+        const trimmed = textToSend.trim();
+        if (!trimmed) return;
 
-  const handlePickFromAll = (faqItem) => {
-    sendMessage(faqItem.title, { hideFaq: true });
-  };
+        if (hideFaq) setShowFaqPanel(false);
 
-  const closeChat = () => setOpen(false);
+        const userMsg = { from: "user", text: trimmed, time: new Date() };
+        const thinkingMsg = { from: "bot", text: "Се размислува...", time: new Date() };
 
-  return (
-    <>
-      {!open && (
-        <button className="uv-chat-fab" onClick={() => setOpen(true)}>
-          <div className="uv-chat-fab-inner">
-            <img src="/chat_assistant.png" alt="UniVibe" className="uv-chat-fab-logo" />
-            <span className="uv-chat-fab-dot"></span>
-            <div className="uv-chat-fab-bubble">Твој UniVibe асистент</div>
-          </div>
-        </button>
-      )}
+        setMessages((prev) => [...prev, userMsg, thinkingMsg]);
+        setInput("");
 
-      {open && (
-        <div className="uv-chat-window">
-          <div className="uv-chat-header">
-            <div className="uv-chat-header-left">
-              <img src="/chat_assistant.png" alt="UniVibe" className="uv-chat-header-logo" />
-              <div className="uv-chat-header-text">
-                <div className="uv-chat-title">UniVibe Асистент</div>
-                <div className="uv-chat-subtitle">
-                  Тука сум ако ти треба помош <Icon name="smiley.png" />
-                </div>
-              </div>
-            </div>
+        let replyContent;
+        const faqId = matchFAQ(trimmed);
+        if (faqId) {
+            replyContent = FAQ.find((x) => x.id === faqId)?.answer;
+        } else {
+            replyContent = await fetchAIResponse(trimmed);
+        }
 
-            <button className="uv-chat-close" onClick={closeChat} aria-label="Close chat">
-              ✕
-            </button>
-          </div>
+        setMessages((prev) => {
+            const withoutThinking = prev.filter((m) => m !== thinkingMsg);
+            return [...withoutThinking, { from: "bot", text: replyContent, time: new Date() }];
+        });
 
-          <div className="uv-chat-body">
-            {showFaqPanel && (
-              <div className="uv-quick">
-                <div className="uv-quick-title">Најчести прашања:</div>
+        setTimeout(() => {
+            setMessages((prev) => [
+                ...prev,
+                {
+                    from: "bot",
+                    text: (
+                        <>
+                            Ако сакаш, можеш да видиш и други прашања <Icon name="search.png" />
+                        </>
+                    ),
+                    time: new Date(),
+                    meta: { showFaqButton: true },
+                },
+            ]);
+        }, 250);
+    };
 
-                <div className="uv-quick-list">
-                  {top5.map((q) => (
-                    <button key={q.id} type="button" className="uv-quick-btn" onClick={() => handleTopQuestion(q)}>
-                      {q.title}
-                    </button>
-                  ))}
-                </div>
+    const onSubmit = (e) => {
+        e.preventDefault();
+        sendMessage(undefined, { hideFaq: true });
+    };
 
-                <button type="button" className="uv-other-btn" onClick={handleShowAllFaq}>
-                  Други прашања
+    const handleTopQuestion = (faqItem) => sendMessage(faqItem.title, { hideFaq: true });
+    const handleShowAllFaq = () => {
+        setShowAllFaqInChat(true);
+        setShowFaqPanel(false);
+    };
+
+    const handlePickFromAll = (faqItem) => sendMessage(faqItem.title, { hideFaq: true });
+    const closeChat = () => setOpen(false);
+
+    return (
+        <>
+            {!open && (
+                <button className="uv-chat-fab" onClick={() => setOpen(true)}>
+                    <div className="uv-chat-fab-inner">
+                        <img src="/chat_assistant.png" alt="UniVibe" className="uv-chat-fab-logo" />
+                        <span className="uv-chat-fab-dot"></span>
+                        <div className="uv-chat-fab-bubble">Твој UniVibe асистент</div>
+                    </div>
                 </button>
-              </div>
             )}
 
-            <div className="uv-messages">
-              {messages.map((m, idx) => (
-                <div key={idx} className={`uv-msg-row ${m.from === "user" ? "uv-right" : "uv-left"}`}>
-                  <div className={`uv-msg ${m.from === "user" ? "uv-user" : "uv-bot"}`}>
-                    
-                    {typeof m.text === "string" ? m.text : m.text}
+            {open && (
+                <div className="uv-chat-window">
+                    <div className="uv-chat-header">
+                        <div className="uv-chat-header-left">
+                            <img src="/chat_assistant.png" alt="UniVibe" className="uv-chat-header-logo" />
+                            <div className="uv-chat-header-text">
+                                <div className="uv-chat-title">UniVibe Асистент</div>
+                                <div className="uv-chat-subtitle">
+                                    Тука сум ако ти треба помош <Icon name="smiley.png" />
+                                </div>
+                            </div>
+                        </div>
+                        <button className="uv-chat-close" onClick={closeChat} aria-label="Close chat">✕</button>
+                    </div>
 
-                    {m?.meta?.showFaqButton && (
-                      <button type="button" className="uv-inline-btn" onClick={handleShowAllFaq}>
-                        <Icon name="star.png" /> Други прашања
-                      </button>
-                    )}
+                    <div className="uv-chat-body">
+                        {showFaqPanel && (
+                            <div className="uv-quick">
+                                <div className="uv-quick-title">Најчести прашања:</div>
+                                <div className="uv-quick-list">
+                                    {top5.map((q) => (
+                                        <button key={q.id} type="button" className="uv-quick-btn" onClick={() => handleTopQuestion(q)}>
+                                            {q.title}
+                                        </button>
+                                    ))}
+                                </div>
+                                <button type="button" className="uv-other-btn" onClick={handleShowAllFaq}>
+                                    Други прашања
+                                </button>
+                            </div>
+                        )}
 
-                    {m?.meta?.showAllFaq && (
-                      <div className="uv-allfaq">
-                        {allFaq.map((q) => (
-                          <button key={q.id} type="button" className="uv-allfaq-btn" onClick={() => handlePickFromAll(q)}>
-                            {q.title}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                        <div className="uv-messages">
+                            {messages.map((m, idx) => (
+                                <div key={idx} className={`uv-msg-row ${m.from === "user" ? "uv-right" : "uv-left"}`}>
+                                    <div className={`uv-msg ${m.from === "user" ? "uv-user" : "uv-bot"}`}>
+                                        {m.text}
+                                        {m.meta?.showFaqButton && (
+                                            <button type="button" className="uv-inline-btn" onClick={handleShowAllFaq}>
+                                                <Icon name="star.png" /> Други прашања
+                                            </button>
+                                        )}
+                                        {m.meta?.showAllFaq && (
+                                            <div className="uv-allfaq">
+                                                {allFaq.map((q) => (
+                                                    <button key={q.id} type="button" className="uv-allfaq-btn" onClick={() => handlePickFromAll(q)}>
+                                                        {q.title}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                            <div ref={messagesEndRef} />
+                        </div>
+                        {showAllFaqInChat && (
+                            <div className="uv-allfaq-groups">
+                                {FAQ_GROUPS.map((group) => (
+                                    <div key={group.title} className="uv-faq-group">
+                                        <b>{group.title}</b>
+                                        <div className="uv-faq-group-list">
+                                            {group.ids.map((id) => {
+                                                const q = FAQ.find((x) => x.id === id);
+                                                return (
+                                                    <button
+                                                        key={id}
+                                                        type="button"
+                                                        className="uv-allfaq-btn"
+                                                        onClick={() => handlePickFromAll(q)}
+                                                    >
+                                                        {q.title}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <form className="uv-chat-input" onSubmit={onSubmit}>
+                        <input
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            placeholder="Напиши прашање..."
+                            className="uv-input"
+                        />
+                        <button type="submit" className="uv-send" aria-label="Send">➤</button>
+                    </form>
                 </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-          </div>
-
-          <form className="uv-chat-input" onSubmit={onSubmit}>
-            <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Напиши прашање..." className="uv-input" />
-            <button type="submit" className="uv-send" aria-label="Send">
-              ➤
-            </button>
-          </form>
-        </div>
-      )}
-    </>
-  );
+            )}
+        </>
+    );
 }

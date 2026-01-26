@@ -38,7 +38,8 @@ public class SecurityConfig {
                                 "/api/event/public/**",
                                 "/api/category/public/**",
                                 "/api/faculty/public/**",
-                                "/api/user/public/**")
+                                "/api/user/public/**",
+                                "/api/chatbot/**")
                                 .permitAll()
                         .anyRequest().authenticated()
                 )
