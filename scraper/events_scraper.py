@@ -19,8 +19,6 @@ session.headers.update({
 })
 
 
-# ----------------- helpers -----------------
-
 def slugify(text):
     text = text.lower()
     text = re.sub(r'[^a-z0-9]+', '-', text)
@@ -37,7 +35,6 @@ def image_filename(title, image_url):
 def download_image(image_url, filename):
     path = os.path.join(IMAGES_DIR, filename)
 
-    # prevent duplicates
     if os.path.exists(path):
         return filename
 
@@ -50,8 +47,6 @@ def download_image(image_url, filename):
     time.sleep(0.3)
     return filename
 
-
-# ----------------- scraper -----------------
 
 page = 0
 events = []
@@ -87,7 +82,6 @@ while True:
             "image_url": None
         }
 
-        # ✅ THUMBNAIL IMAGE (from LIST page – correct one)
         img = item.select_one(".col-xs-12.col-sm-4 img.img-responsive")
         if img and img.get("src"):
             image_url = urljoin(BASE_DOMAIN, img["src"])
@@ -112,8 +106,6 @@ while True:
 
     page += 1
 
-
-# ----------------- save -----------------
 
 with open("../scraper/events_raw.json", "w", encoding="utf-8") as f:
     json.dump(events, f, ensure_ascii=False, indent=2)

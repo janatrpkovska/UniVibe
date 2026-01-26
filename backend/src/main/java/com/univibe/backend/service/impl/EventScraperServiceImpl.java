@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -71,13 +72,25 @@ public class EventScraperServiceImpl implements EventScraperService {
 
 
                 // Resolve category from service
-                Category category = categoryService.getCategoryByName(categoryName);
+                // Create a map
+                Map<String, String> categoryMap = new HashMap<>();
+
+                categoryMap.put("tech", "Технологија");
+                categoryMap.put("career", "Кариера");
+                categoryMap.put("research", "Наука / Истражување");
+                categoryMap.put("culture", "Култура");
+                categoryMap.put("health", "Здравје");
+                categoryMap.put("sport", "Спорт");
+                categoryMap.put("education", "Едукација");
+                categoryMap.put("workshop", "Работилници");
+
+                Category category = categoryService.getCategoryByName(categoryMap.get(categoryName));
 
                 eventService.createScrapedEvent(
                         title,
                         description,
                         startDateStr!=null?LocalDateTime.parse(startDateStr):null,
-                        endDateStr!=null?LocalDateTime.parse(endDateStr).toLocalDate():null,
+                        endDateStr!=null?LocalDate.parse(endDateStr):null,
                         location,
                         image_url,
                         category,

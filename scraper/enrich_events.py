@@ -2,8 +2,14 @@ from ollama import chat
 from json import JSONDecodeError
 import json
 from datetime import datetime
+from ollama import Client
+import os
 
-# ✅ Load events from scraper
+api_key = os.getenv("OLLAMA_API_KEY")
+
+if not api_key:
+    raise RuntimeError("API_KEY is not set")
+
 with open("../scraper/events_raw.json", "r", encoding="utf-8") as f:
     events = json.load(f)
 
@@ -17,30 +23,35 @@ for event in events:
 Return ONLY valid JSON with the following fields:
 
 {{
-  "startDate": "YYYY-MM-DDTHH:MM or null if unknown",
+  "startDate": "YYYY-MM-DDTHH:MM or null if unknown(dates may be with words)",
   "endDate": "YYYY-MM-DD or null if unknown",
   "location": "event location if mentioned, else null",
   "category": "short label from these: (tech, career, research, culture, health, sport, education, workshop)",
   "mode": "short label from these: (LIVE, ONLINE, HYBRID)",
 }}
 
-Event description:
+Event description(in macedonian):
 \"\"\"{description}\"\"\"
 """
 
-
     response_text = ""
 
-    stream = chat(
-        model="gemma3",
-        messages=[{"role": "user", "content": prompt}],
-        stream=True,
+    client = Client(
+    host="https://ollama.com",
+    headers={'Authorization': f'Bearer {api_key}'}
     )
 
-    for chunk in stream:
-        response_text += chunk["message"]["content"]
+    messages = [
+    {
+        'role': 'user',
+        'content': prompt,
+    },
+    ]
 
-    # 🔍 Extract JSON safely
+    for part in client.chat('gpt-oss:120b', messages=messages, stream=True):
+        if 'message' in part and 'content' in part['message']:
+            response_text += part['message']['content']
+
     start = response_text.find("{")
     end = response_text.rfind("}") + 1
 
@@ -54,7 +65,6 @@ Event description:
 
     event.update(parsed)
 
-# ✅ Save enriched events
 with open("../scraper/events_ai.json", "w", encoding="utf-8") as f:
     json.dump(events, f, ensure_ascii=False, indent=2)
 
