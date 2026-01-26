@@ -11,6 +11,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/category")
+@CrossOrigin(origins = "*")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -28,6 +29,9 @@ public class CategoryController {
     @PostMapping("/create-category")
     @PreAuthorize("hasRole('ADMIN')")
     public Category createCategory(@RequestBody Category category) {
-        return categoryService.addCategory(category.getName(), category.getIcon_url());
+        return categoryService.addCategory(
+                category.getName(),
+                category.getIcon_url()
+        );
     }
 }

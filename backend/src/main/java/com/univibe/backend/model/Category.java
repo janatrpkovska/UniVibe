@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 @Entity
 public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,10 +18,10 @@ public class Category {
 
     private String icon_url;
 
+    public Category() {}
+
     public Category(String name, String icon_url) {
         this.name = name;
         this.icon_url = icon_url;
     }
-
-    public Category() {}
 }
