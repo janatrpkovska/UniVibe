@@ -1,24 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "../App.css";
 import "./ChooseCategory.css";
 
-const categories = [
-  { id: "tech", name: "Технологија", icon: "/category_images/tech.png" },
-  { id: "career", name: "Кариeра", icon: "/category_images/career-path.png" },
-  { id: "research", name: "Наука/Истражување", icon: "/category_images/innovation.png" },
-  { id: "culture", name: "Култура", icon: "/category_images/workshop.png" },
-  { id: "health", name: "Здравје", icon: "/category_images/medical.png" },
-  { id: "sport", name: "Спорт", icon: "/category_images/sport.png" },
-  { id: "edu", name: "Едукација", icon: "/category_images/education.png" },
-  { id: "workshops", name: "Работилници", icon: "/category_images/art.png" },
-];
-
 export default function ChooseCategory() {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const res = await axios.get(
+          "http://localhost:9091/api/category/public/get-all"
+        );
+
+        setCategories(res.data || []);
+      } catch (err) {
+        console.error(err);
+        setError("Не може да се вчитаат категориите.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (loading) {
+    return <p style={{ padding: "40px" }}>Се вчитува...</p>;
+  }
+
+  if (error) {
+    return (
+      <p style={{ padding: "40px", color: "red" }}>
+        {error}
+      </p>
+    );
+  }
+
   return (
     <div
       className="categories-page"
-      style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/category_images/bg.jpg)` }}
+      style={{
+        backgroundImage: `url(${process.env.PUBLIC_URL}/category_images/bg.jpg)`,
+      }}
     >
       <div className="categories-inner">
         <div className="categories-content">
@@ -28,8 +58,19 @@ export default function ChooseCategory() {
 
           <div className="categories-grid">
             {categories.map((cat) => (
-              <Link key={cat.id} to={`/categories/${cat.id}`} className="cat-card">
-                <img src={cat.icon} className="cat-icon" alt={cat.name} />
+              <Link
+                key={cat.id}
+                to={`/categories/${cat.id}`}
+                className="cat-card"
+              >
+                <img
+                  src={cat.icon_url}
+                  className="cat-icon"
+                  alt={cat.name}
+                  onError={(e) => {
+                    e.target.src = "/logo.png";
+                  }}
+                />
                 <p>{cat.name}</p>
               </Link>
             ))}

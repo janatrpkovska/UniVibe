@@ -10,8 +10,10 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/category/")
+@RequestMapping("/api/category")
+@CrossOrigin(origins = "*")
 public class CategoryController {
+
     private final CategoryService categoryService;
 
     @GetMapping("/public/get-category/{id}")
@@ -19,16 +21,9 @@ public class CategoryController {
         return categoryService.getCategoryById(id);
     }
 
-    @PostMapping("/create-category")
-    @PreAuthorize("hasRole('ADMIN')")
-    public Category createCategory(@RequestBody Category category) {
-        return categoryService.addCategory(category.getName(), category.getIcon_url());
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/update-category")
-    public Category updateCategory(@RequestBody Category category) {
-        return categoryService.updateCategory(category.getId(), category.getName(), category.getIcon_url());
+    @GetMapping("/public/get-all")
+    public List<Category> getAllCategories() {
+        return categoryService.getAllCategories();
     }
 
     @GetMapping("/public/get-by-name")
@@ -36,13 +31,27 @@ public class CategoryController {
         return categoryService.getCategoryByName(name);
     }
 
-    @GetMapping("/public/get-all")
-    public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+    @PostMapping("/create-category")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Category createCategory(@RequestBody Category category) {
+        return categoryService.addCategory(
+                category.getName(),
+                category.getIcon_url()
+        );
     }
 
+    @PostMapping("/update-category")
     @PreAuthorize("hasRole('ADMIN')")
+    public Category updateCategory(@RequestBody Category category) {
+        return categoryService.updateCategory(
+                category.getId(),
+                category.getName(),
+                category.getIcon_url()
+        );
+    }
+
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Category deleteCategory(@PathVariable Long id) {
         return categoryService.deleteCategory(id);
     }
