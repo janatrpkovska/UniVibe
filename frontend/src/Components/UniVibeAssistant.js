@@ -72,9 +72,9 @@ export default function UniVibeAssistant() {
             {!open && (
                 <button className="uv-chat-fab" onClick={() => setOpen(true)}>
                     <div className="uv-chat-fab-inner">
-                        <img src="/chat_assistant.png" alt="UniVibe AI" className="uv-chat-fab-logo" />
+                        <img src="/chat_assistant.png" alt="UniVibe" className="uv-chat-fab-logo" />
                         <span className="uv-chat-fab-dot"></span>
-                        <div className="uv-chat-fab-bubble">Твој AI асистент</div>
+                        <div className="uv-chat-fab-bubble">Твој UniVibe асистент</div>
                     </div>
                 </button>
             )}
