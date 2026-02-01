@@ -4,11 +4,15 @@ import json
 from datetime import datetime
 from ollama import Client
 import os
+import sys
 
 api_key = os.getenv("OLLAMA_API_KEY")
 
 if not api_key:
-    raise RuntimeError("API_KEY is not set")
+    with open("../scraper/events_ai.json", "w", encoding="utf-8") as f:
+        json.dump([], f, ensure_ascii=False, indent=2)
+    print("OLLAMA_API_KEY not set → saved empty events_ai.json")
+    sys.exit(0)
 
 with open("../scraper/events_raw.json", "r", encoding="utf-8") as f:
     events = json.load(f)
