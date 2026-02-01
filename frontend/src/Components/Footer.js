@@ -1,7 +1,41 @@
 import { Container, Button } from 'react-bootstrap'
 import {FaFacebook, FaInstagram, FaTwitter, FaYahoo} from "react-icons/fa";
+import { useState } from "react";
+
 
 export default function Footer(){
+    const [email, setEmail] = useState("");
+    const [message, setMessage] = useState("");
+
+    const handleSubscribe = async () => {
+        if (!email) {
+            setMessage("Внеси email адреса");
+            return;
+        }
+
+        try {
+            const res = await fetch("http://localhost:9091/api/newsletter/subscribe", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email }),
+            });
+
+            const text = await res.text(); // ⬅️ ВАЖНО
+
+            if (!res.ok) {
+                throw new Error(text);
+            }
+
+            setMessage(text);
+            setEmail("");
+        } catch (err) {
+            console.error("FETCH ERROR:", err);
+            setMessage("Настана грешка, пробај повторно");
+        }
+    };
+
+
+
     return(
         <Container
             fluid
@@ -19,7 +53,11 @@ export default function Footer(){
                 </a>
             </div>
             <div style={{ fontSize: "20px" }}>Не пропуштајте универзитетски настани <input
+                type="email"
                 placeholder="example@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+
                 style={{
                     width: "50%",
                     maxWidth: "15em",
@@ -47,6 +85,10 @@ export default function Footer(){
                 />
 
                 <Button
+                    onClick={() => {
+                        handleSubscribe();
+                    }}
+                    disabled={!email}
                     type="button"
                     style={{
                         backgroundColor: '#ffcc33',
@@ -61,6 +103,19 @@ export default function Footer(){
                 >
                     Subscribe
                 </Button>
+                {message && (
+                    <div
+                        style={{
+                            marginTop: "10px",
+                            color: message.includes("Успешно") ? "#16a34a" : "#dc2626",
+                            fontSize: "14px",
+                            fontWeight: "500"
+                        }}
+                    >
+                        {message}
+                    </div>
+                )}
+
             </div>
         </Container>
 
