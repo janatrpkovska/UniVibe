@@ -83,7 +83,9 @@ public class EventController {
     public Event createEventSimple(@RequestBody CreateEventRequest request) {
         // Parse date and time
         LocalDateTime startDate = LocalDateTime.parse(request.getDate() + "T" + request.getTime() + ":00");
-        LocalDate endDate = LocalDate.parse(request.getDate());
+        LocalDate endDate = (request.getEndDate() != null && !request.getEndDate().trim().isEmpty())
+                ? LocalDate.parse(request.getEndDate())
+                : LocalDate.parse(request.getDate());
 
         // Look up or create category
         Category category = categoryService.getCategoryByName(request.getCategoryName());

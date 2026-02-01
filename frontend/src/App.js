@@ -7,6 +7,7 @@ import Search from "./Components/Search";
 import SiteNavbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import AddEventForm from "./Components/AddEventForm";
+import Event from "./Components/Event";
 import Login from "./Components/Login";
 import Register from "./Components/Register";
 import ScrollToHash from "./ScrollToHash";
@@ -42,6 +43,7 @@ function AppRoutes() {
             <Route path="/categories/:categoryId" element={<CategoryEvents />} />
             <Route path="/search" element={<Search />} />
             <Route path="/events/new" element={<AddEventForm />} />
+            <Route path="/event/:id" element={<Event />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Routes>

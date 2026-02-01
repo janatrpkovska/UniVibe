@@ -33,6 +33,7 @@ const initialForm = {
   title: "",
   description: "",
   date: "",
+  endDate: "",
   time: "",
   location: "",
   faculty: "",
@@ -93,6 +94,7 @@ export default function AddEventForm() {
     if (form.eventTypeId === "other" && !form.eventTypeCustom.trim())
       return "Внеси што е настанот (пример: Бруцошка забава).";
     if (!form.date) return "Одбери датум.";
+    if (form.endDate && form.endDate < form.date) return "Крајниот датум не може да биде пред почетниот.";
     if (!form.time) return "Одбери време.";
     if (!form.location.trim()) return "Внеси локација.";
     return "";
@@ -132,6 +134,7 @@ export default function AddEventForm() {
         title: form.title.trim(),
         description: form.description.trim(),
         date: form.date,
+        endDate: form.endDate.trim() || null,
         time: form.time,
         location: form.location.trim(),
         facultyName: form.faculty.trim() || null,
@@ -304,7 +307,7 @@ export default function AddEventForm() {
         <Row className="g-3">
           <Col md={6}>
             <Form.Group className="mb-0">
-              <Form.Label>Датум</Form.Label>
+              <Form.Label>Почетен датум</Form.Label>
               <Form.Control
                 type="date"
                 name="date"
@@ -313,6 +316,20 @@ export default function AddEventForm() {
               />
             </Form.Group>
           </Col>
+          <Col md={6}>
+            <Form.Group className="mb-0">
+              <Form.Label>Краен датум (опционално)</Form.Label>
+              <Form.Control
+                type="date"
+                name="endDate"
+                value={form.endDate}
+                onChange={onChange}
+                min={form.date || undefined}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row className="g-3 mt-1">
           <Col md={6}>
             <Form.Group className="mb-0">
               <Form.Label>Време</Form.Label>
