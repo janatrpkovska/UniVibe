@@ -18,7 +18,7 @@ export default function Footer(){
                     <FaYahoo size={30} color="#6B2FB9" />
                 </a>
             </div>
-            <div>Не пропуштајте универзитетски настани <input
+            <div style={{ fontSize: "20px" }}>Не пропуштајте универзитетски настани <input
                 placeholder="example@example.com"
                 style={{
                     width: "50%",
@@ -29,7 +29,7 @@ export default function Footer(){
                     borderRadius: "12px",
                     border: "2px solid #e0e0e0",
                     outline: "none",
-                    fontSize: "15px",
+                    fontSize: "20px",
                     background: "#fafafa",
                     transition: "all 0.2s ease",
                     boxShadow: "0 2px 6px rgba(0,0,0,0.05)"

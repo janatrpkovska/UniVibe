@@ -73,6 +73,8 @@ export default function Home() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("show");
+            const targetNum = entry.target.dataset.target;
+            if (targetNum != null) animateValue(entry.target, 0, Number(targetNum), 1200);
             observer.unobserve(entry.target);
           }
         });
@@ -86,6 +88,21 @@ export default function Home() {
 
     return () => observer.disconnect();
   }, []);
+
+  function animateValue(el, start, end, duration) {
+    const suffix = el.dataset.suffix || "";
+    const startTime = performance.now();
+    function step(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 2);
+      const current = Math.round(start + (end - start) * easeOut);
+      const span = el.querySelector(".stat-number");
+      if (span) span.textContent = current.toLocaleString("mk-MK") + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
 
   return (
     <>
@@ -262,14 +279,16 @@ export default function Home() {
         }}
       >
         {[
-          { number: "12+", text: "Факултети" },
-          { number: "200+", text: "Организирани настани" },
-          { number: "1,100+", text: "Студенти" },
+          { number: "12+", text: "Факултети", target: 12, suffix: "+" },
+          { number: "200+", text: "Организирани настани", target: 200, suffix: "+" },
+          { number: "1,100+", text: "Студенти", target: 1100, suffix: "+" },
         ].map((item, index) => (
           <div
             key={index}
             ref={(el) => (statsRef.current[index] = el)}
             className="fade-in-up"
+            data-target={item.target}
+            data-suffix={item.suffix}
             style={{
               background: "#f9f9f9",
               padding: "30px 40px",
@@ -279,7 +298,7 @@ export default function Home() {
             }}
           >
             <h2 style={{ fontSize: "48px", color: "#EBC042", margin: 0 }}>
-              {item.number}
+              <span className="stat-number">0{item.suffix}</span>
             </h2>
             <p style={{ fontSize: "18px", marginTop: "10px" }}>{item.text}</p>
           </div>

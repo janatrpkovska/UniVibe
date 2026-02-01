@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 public class CreateEventRequest {
     String title;
     String description;
-    String date; // ISO date string
+    String date; // ISO date string (start date)
+    String endDate; // ISO date string (optional; if empty, same as date)
     String time; // Time string
     String location;
     String imageUrl;
