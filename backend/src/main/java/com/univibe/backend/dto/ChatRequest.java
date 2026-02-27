@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatRequest {
     private String question;
+    private boolean aiEnabled;
 }

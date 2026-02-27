@@ -6,6 +6,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
 
 @Service
 public class MailSenderServiceImpl implements MailSenderService {
@@ -17,6 +18,7 @@ public class MailSenderServiceImpl implements MailSenderService {
     }
 
     @Override
+    @Async
     public void sendHtmlMail(String email, String subject, String htmlBody) {
         try {
             MimeMessage message = mailSender.createMimeMessage();

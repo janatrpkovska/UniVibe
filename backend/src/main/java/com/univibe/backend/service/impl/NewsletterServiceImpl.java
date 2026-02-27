@@ -40,10 +40,9 @@ public class NewsletterServiceImpl implements NewsletterService {
             return "Невалидна email адреса ❌";
         }
 
-        if (repository.findByEmail(email).isPresent()) {
-            return "Веќе си пријавен 🙂";
+       if (repository.findByEmail(email).isPresent()) {
+            return "Веќе си на листата 😊\n\nНаскоро ќе добиеш нови информации на email.";
         }
-
         NewsletterSubscriber subscriber = new NewsletterSubscriber();
         subscriber.setEmail(email);
         repository.save(subscriber);
@@ -57,7 +56,7 @@ public class NewsletterServiceImpl implements NewsletterService {
 
         mailSenderService.sendHtmlMail(email, "Welcome to UniVibe 🎓", html);
 
-        return "Успешно се пријави 🎉";
+       return "💌 Ти благодариме!\n\nЌе те известуваме за нови универзитетски настани ✨";
     }
 
     @Override
