@@ -14,10 +14,9 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ username, password });
 
     await axios.post("http://localhost:9091/api/auth/login", {
-      "username": username,
+      "identifier": username,
       "password": password
     }).then(res=>{
       login(res.data)
@@ -50,7 +49,7 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
             <input
               type="text"
-              placeholder="Внесете корисничко име"
+              placeholder="Внесете корисничко име или е-пошта"
               value={username}
               onChange={(e) => {setUsername(e.target.value); setWrongCredentials(false)}}
               required

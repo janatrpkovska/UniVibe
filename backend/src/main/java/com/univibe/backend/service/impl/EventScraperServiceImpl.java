@@ -10,6 +10,7 @@ import com.univibe.backend.model.EventMode;
 import com.univibe.backend.service.CategoryService;
 import com.univibe.backend.service.EventScraperService;
 import com.univibe.backend.service.EventService;
+import com.univibe.backend.service.FacultyService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -30,10 +31,12 @@ public class EventScraperServiceImpl implements EventScraperService {
     private final EventService eventService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final CategoryService categoryService;
+    private final FacultyService facultyService;
 
-    public EventScraperServiceImpl(EventService eventService, CategoryService categoryService) {
+    public EventScraperServiceImpl(EventService eventService, CategoryService categoryService, FacultyService facultyService) {
         this.eventService = eventService;
         this.categoryService = categoryService;
+        this.facultyService = facultyService;
     }
 
     @Override
@@ -54,8 +57,6 @@ public class EventScraperServiceImpl implements EventScraperService {
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.registerModule(new JavaTimeModule());
-
-            // Deserialize JSON into list of maps
             List<Map<String, Object>> eventsList = mapper.readValue(
                     eventsFile, new TypeReference<List<Map<String, Object>>>() {}
             );
@@ -71,8 +72,6 @@ public class EventScraperServiceImpl implements EventScraperService {
                 String image_url = (String) map.get("image_url");
 
 
-                // Resolve category from service
-                // Create a map
                 Map<String, String> categoryMap = new HashMap<>();
 
                 categoryMap.put("tech", "Технологија");
@@ -95,7 +94,7 @@ public class EventScraperServiceImpl implements EventScraperService {
                         image_url,
                         category,
                         null,
-                        null,
+                        facultyService.findById(1L),
                         EventMode.valueOf(mode)
                 );
             }
@@ -116,14 +115,11 @@ public class EventScraperServiceImpl implements EventScraperService {
                 return;
             }
 
-            // Create a new ObjectMapper configured to ignore unknown properties
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-            // Read JSON into a list of Event objects
             List<Event> events = mapper.readValue(eventsFile, new TypeReference<List<Event>>() {});
 
-            // Remove events that are already in the DB (based on title)
             Iterator<Event> iterator = events.iterator();
             while (iterator.hasNext()) {
                 Event event = iterator.next();
@@ -134,7 +130,6 @@ public class EventScraperServiceImpl implements EventScraperService {
                 }
             }
 
-            // Write the filtered list back to JSON
             mapper.writerWithDefaultPrettyPrinter().writeValue(eventsFile, events);
 
             System.out.println("Removed events already in DB. Remaining: " + events.size());
