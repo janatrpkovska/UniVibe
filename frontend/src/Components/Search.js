@@ -65,11 +65,8 @@ function FilterSection({
   setFaculty,
   date,
   setDate,
-  selectedLocation,
-  setSelectedLocation,
   categories,
   faculties,
-  locations,
   onSearch,
 }) {
   return (
@@ -120,33 +117,11 @@ function FilterSection({
 
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            columnGap: "24px",
-            rowGap: "24px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "24px",
           }}
         >
-          <div>
-            <label style={{ display: "block", marginBottom: "8px" }}>Категорија</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "8px",
-                border: "1px solid #ccc",
-              }}
-            >
-              <option value="">Сите категории</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <div>
             <label style={{ display: "block", marginBottom: "8px" }}>Факултет</label>
             <select
@@ -168,41 +143,49 @@ function FilterSection({
             </select>
           </div>
 
-          <div>
-            <label style={{ display: "block", marginBottom: "8px" }}>Локација</label>
-            <select
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
+          <div
               style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "8px",
-                border: "1px solid #ccc",
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "24px",
               }}
-            >
-              <option value="">Сите локации</option>
-              {locations.map((loc, index) => (
-                <option key={index} value={loc}>
-                  {loc}
-                </option>
-              ))}
-            </select>
-          </div>
+          >
+              <div>
+                  <label style={{ display: "block", marginBottom: "8px" }}>Категорија</label>
+                  <select
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      style={{
+                          width: "100%",
+                          padding: "12px",
+                          borderRadius: "8px",
+                          border: "1px solid #ccc",
+                      }}
+                  >
+                      <option value="">Сите категории</option>
+                      {categories.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                              {cat.name}
+                          </option>
+                      ))}
+                  </select>
+              </div>
 
-          <div>
-            <label style={{ display: "block", marginBottom: "8px" }}>Датум</label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "8px",
-                border: "1px solid #ccc",
-              }}
-            />
-          </div>
+              <div>
+                  <label style={{ display: "block", marginBottom: "8px" }}>Датум</label>
+                  <input
+                      type="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      style={{
+                          width: "100%",
+                          padding: "12px",
+                          borderRadius: "8px",
+                          border: "1px solid #ccc",
+                      }}
+                  />
+              </div>
+            </div>
         </div>
 
         <div onClick={onSearch} style={{ textAlign: "center", marginTop: "32px" }}>
@@ -385,14 +368,12 @@ export default function SearchPage() {
   const [size] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [totalResults, setTotalResults] = useState(0);
-  const [locations, setLocations] = useState([]);
   const [categories, setCategories] = useState([]);
   const [faculties, setFaculties] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState("");
 
   const fetchEvents = async () => {
     const hasFilters =
-      keyword.trim() !== "" || category !== "" || faculty !== "" || date !== "" || selectedLocation !== "";
+      keyword.trim() !== "" || category !== "" || faculty !== "" || date !== "";
 
     if (!hasFilters) {
       setEvents([]);
@@ -405,7 +386,6 @@ export default function SearchPage() {
     if (category) url += `&categoryId=${category}`;
     if (faculty) url += `&facultyId=${faculty}`;
     if (date) url += `&date=${date}`;
-    if (selectedLocation) url += `&location=${selectedLocation}`;
 
     try {
       const response = await fetch(url);
@@ -451,32 +431,17 @@ export default function SearchPage() {
       }
     };
 
-    const fetchLocations = async () => {
-      try {
-        const res = await fetch("http://localhost:9091/api/event/public/locations");
-        if (!res.ok) {
-          setLocations([]);
-          return;
-        }
-        const data = await res.json();
-        setLocations(data);
-      } catch (e) {
-        setLocations([]);
-      }
-    };
-
-    fetchLocations();
     fetchCategories();
     fetchFaculties();
   }, []);
 
   useEffect(() => {
     setPage(0);
-  }, [keyword, category, faculty, date, selectedLocation]);
+  }, [keyword, category, faculty, date]);
 
   useEffect(() => {
     fetchEvents();
-  }, [page, keyword, category, faculty, date, selectedLocation]);
+  }, [page, keyword, category, faculty, date]);
 
   useEffect(() => {
     if (location.state?.scrollToForm && formRef.current) {
@@ -513,11 +478,8 @@ export default function SearchPage() {
           setFaculty={setFaculty}
           date={date}
           setDate={setDate}
-          selectedLocation={selectedLocation}
-          setSelectedLocation={setSelectedLocation}
           categories={categories}
           faculties={faculties}
-          locations={locations}
           onSearch={() => {
             setPage(0);
             fetchEvents();

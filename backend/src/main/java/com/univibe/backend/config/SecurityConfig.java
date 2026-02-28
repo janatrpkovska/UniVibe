@@ -40,8 +40,12 @@ public class SecurityConfig {
                                 "/api/faculty/public/**",
                                 "/api/user/public/**",
                                 "/api/chatbot/**",
+                                "/api/users/login",
+                                "/api/users/register",
                                 "/api/newsletter/**" )
+
                                 .permitAll()
+                        .requestMatchers("/api/saved-events/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

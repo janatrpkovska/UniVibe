@@ -271,3 +271,204 @@
   vertical-align: middle;
   margin: 0 6px;
 }
+
+.uv-action-btn {
+  margin-top: 8px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+  background: rgba(255, 204, 77, 0.95);
+  color: #0b1f44;
+  transition: all 0.18s ease;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.uv-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.uv-action-btn:active {
+  transform: scale(0.97);
+}
+
+/* NEWSLETTER EMAIL INPUT */
+
+.uv-newsletter-input {
+  width: 100%;
+  height: 42px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+
+  border-radius: 12px;
+  border: 1px solid rgba(145, 171, 218, 0.35);
+
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0 12px;
+
+  font-size: 14px;
+  color: #0b1f44;
+  outline: none;
+
+  transition: all 0.2s ease;
+}
+
+.uv-newsletter-input:focus {
+  border-color: rgba(145, 171, 218, 0.8);
+  box-shadow: 0 0 0 4px rgba(145, 171, 218, 0.18);
+  background: #ffffff;
+}
+
+.uv-newsletter-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.uv-newsletter-btn {
+  height: 42px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  background: rgba(255, 204, 77, 0.95);
+  color: #0b1f44;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+.uv-newsletter-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+.uv-newsletter-btn.success {
+  background: #2bdc4a;
+  color: white;
+  box-shadow: 0 0 0 0 rgba(43, 220, 74, 0.6);
+  animation: successPulse 0.6s ease;
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(0.9);
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.uv-success-bubble {
+  animation: bubbleGlow 0.8s ease;
+  border: 1px solid #2bdc4a;
+  background: rgba(43, 220, 74, 0.12);
+}
+
+@keyframes bubbleGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(43, 220, 74, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(43, 220, 74, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(43, 220, 74, 0);
+  }
+}
+
+/* Action button styling */
+
+.uv-action-wrapper {
+    margin-top: 10px;
+}
+
+.uv-action-btn {
+    background: #1e3a8a;   
+    border: none;
+    padding: 10px 18px;
+    border-radius: 20px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.uv-action-btn:hover {
+    background: #162c6a;
+}
+
+.uv-action-btn:active {
+    transform: scale(0.97);
+}
+
+.uv-bot .uv-action-btn {
+    margin-top: 8px;
+}
+
+.uv-ai-toggle {
+     background: rgba(255,255,255,0.4);
+    padding: 4px 8px;
+    border-radius: 20px;
+}
+
+
+/* SWITCH */
+
+.uv-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.uv-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.uv-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 20px;
+}
+
+.uv-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+.uv-switch input:checked + .uv-slider {
+    background-color: #01d50c;
+}
+
+.uv-switch input:checked + .uv-slider:before {
+    transform: translateX(20px);
+}
+
+.uv-ai-label {
+    font-weight: 700;
+    font-size: 14px;
+    color: #2c2c2c;
+    letter-spacing: 0.5px;
+}

@@ -20,7 +20,7 @@ export default function Footer(){
                 body: JSON.stringify({ email }),
             });
 
-            const text = await res.text(); // ⬅️ ВАЖНО
+            const text = await res.text();
 
             if (!res.ok) {
                 throw new Error(text);

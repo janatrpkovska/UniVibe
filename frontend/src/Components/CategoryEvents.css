@@ -283,12 +283,18 @@
   margin: 12px 0 14px;
 }
 
-.event-modal-chip {
+.event-modal-chip,
+.event-type-chip {
   font-size: 13px;
   padding: 6px 10px;
   border-radius: 999px;
   background: #f4f6ff;
   color: #1b2559;
+}
+
+.event-type-chip {
+  display: inline-block;
+  margin-bottom: 4px;
 }
 
 .mode-chip {
