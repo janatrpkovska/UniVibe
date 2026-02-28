@@ -2,10 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import EventExpandedCard from "./EventExpandedCard";
+import { useAuth } from "../util/AuthProvider";
 
 const API_BASE = process.env.REACT_APP_API_URL
   ? `${process.env.REACT_APP_API_URL}/api/event`
   : "http://localhost:9091/api/event";
+const SAVED_API_BASE = process.env.REACT_APP_API_URL
+  ? `${process.env.REACT_APP_API_URL}/api/saved-events`
+  : "http://localhost:9091/api/saved-events";
 
 function formatDate(dateStr) {
   if (!dateStr) return "";
@@ -34,9 +38,11 @@ function formatDateRange(startStr, endStr) {
 
 export default function Event() {
   const { id } = useParams();
+  const { token, isAuthenticated } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     if (!id) {
@@ -52,6 +58,32 @@ export default function Event() {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!id || !isAuthenticated || !token) {
+      setIsSaved(false);
+      return;
+    }
+    axios
+      .get(`${SAVED_API_BASE}/check/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => setIsSaved(res.data === true))
+      .catch(() => setIsSaved(false));
+  }, [id, isAuthenticated, token]);
+
+  const handleSaveToggle = () => {
+    if (!token || !id) return;
+    if (isSaved) {
+      axios
+        .delete(`${SAVED_API_BASE}/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(() => setIsSaved(false))
+        .catch(() => {});
+    } else {
+      axios
+        .post(`${SAVED_API_BASE}/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } })
+        .then(() => setIsSaved(true))
+        .catch(() => {});
+    }
+  };
 
   if (loading) {
     return (
@@ -89,6 +121,11 @@ export default function Event() {
         eventImage={eventImage}
         tag={event.status || "SCHEDULED"}
         description={event.description || ""}
+        eventId={event.id}
+        isSaved={isSaved}
+        onSaveToggle={handleSaveToggle}
+        isAuthenticated={isAuthenticated}
+        showOnline={event.mode === "ONLINE" || event.mode === "HYBRID"}
       />
     </div>
   );

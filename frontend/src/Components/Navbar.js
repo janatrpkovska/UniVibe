@@ -53,6 +53,17 @@ function SiteNavbar() {
           >
             За нас
           </Nav.Link>
+
+          {isAuthenticated && (
+            <Nav.Link
+              as={NavLink}
+              to="/saved-events"
+              style={navStyle}
+              className="nav-link"
+            >
+              Зачувани настани
+            </Nav.Link>
+          )}
         </Nav>
         {
           !isAuthenticated ? (<NavLink to="/login" style={{ textDecoration: "none" }}>

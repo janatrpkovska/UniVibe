@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class UserInfoDetails implements UserDetails {
+
     private String username;
     private String password;
     private List<GrantedAuthority> authorities;
@@ -29,26 +30,26 @@ public class UserInfoDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return username;   // ова ќе биде email
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

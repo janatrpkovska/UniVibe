@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,15 +25,15 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequest authRequest){
+    public ResponseEntity<Map<String, String>> login(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
         );
         if (authentication.isAuthenticated()) {
-            User user = userService.findByUsername(authRequest.getUsername());
+            User user = userService.findByEmail(authRequest.getUsername());
             String role = user != null ? user.getRole().name() : "ROLE_USER";
             String token = jwtService.generateToken(authRequest.getUsername(), role);
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(Map.of("token", token));
         } else {
             throw new UsernameNotFoundException("Invalid user request!");
         }
