@@ -314,16 +314,26 @@ function Pagination({ page, setPage, totalPages, size, totalResults }) {
             Previous
           </button>
 
-          <span
-            style={{
-              ...paginationBtn,
-              backgroundColor: "#013C58",
-              color: "white",
-              borderColor: "#013C58",
-            }}
-          >
-            {page + 1} / {totalPages}
-          </span>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              {Array.from({ length: totalPages }, (_, index) => {
+                  const pageNumber = index;
+
+                  return (
+                      <button
+                          key={pageNumber}
+                          onClick={() => setPage(pageNumber)}
+                          style={{
+                              ...paginationBtn,
+                              backgroundColor: pageNumber === page ? "#013C58" : "#fff",
+                              color: pageNumber === page ? "#fff" : "#000",
+                              borderColor: "#013C58",
+                          }}
+                      >
+                          {pageNumber + 1}
+                      </button>
+                  );
+              })}
+          </div>
 
           <button style={paginationBtn} disabled={page + 1 >= totalPages} onClick={() => setPage(page + 1)}>
             Next
@@ -365,7 +375,7 @@ export default function SearchPage() {
   const [date, setDate] = useState("");
   const [events, setEvents] = useState([]);
   const [page, setPage] = useState(0);
-  const [size] = useState(10);
+  const [size] = useState(15);
   const [totalPages, setTotalPages] = useState(0);
   const [totalResults, setTotalResults] = useState(0);
   const [categories, setCategories] = useState([]);
