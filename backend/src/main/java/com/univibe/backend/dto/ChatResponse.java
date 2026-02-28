@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatResponse {
     private String answer;
+    private String action;
 }
