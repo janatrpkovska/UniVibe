@@ -27,13 +27,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(authRequest.getIdentifier(), authRequest.getPassword())
         );
         if (authentication.isAuthenticated()) {
-            User user = userService.findByEmail(authRequest.getUsername());
+            User user = userService.findByUsername(authRequest.getIdentifier());
+            if (user == null) {
+                user = userService.findByEmail(authRequest.getIdentifier());
+            }
             String role = user != null ? user.getRole().name() : "ROLE_USER";
-            String token = jwtService.generateToken(authRequest.getUsername(), role);
-            return ResponseEntity.ok(Map.of("token", token));
+            String token = jwtService.generateToken(authRequest.getIdentifier(), role);
+            return ResponseEntity.ok(token);
         } else {
             throw new UsernameNotFoundException("Invalid user request!");
         }

@@ -90,6 +90,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userJpaRepository.findByEmail(username);
 
+        if(user.isEmpty()){
+            user = userJpaRepository.findByEmail(username);
+        }
+
         if(user.isEmpty()) {
             throw new UsernameNotFoundException("User: " + username + "not found");
         }
@@ -100,9 +104,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         List.of(new SimpleGrantedAuthority("ROLE_" + userDetails.getRole().name()))
 );
     }
-
+  
     @Override
-public User findByEmail(String email) {
-    return this.userJpaRepository.findByEmail(email).orElse(null);
-}
+    public User findByEmail(String email) {
+        return this.userJpaRepository.findByEmail(email).orElse(null);
+    }
 }

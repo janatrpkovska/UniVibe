@@ -14,5 +14,4 @@ public interface UserService {
     String updatePassword(Long id, String oldPassword, String newPassword);
     List<User> findAll();
     User findByEmail(String email);
-    
 }
