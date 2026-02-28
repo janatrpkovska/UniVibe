@@ -90,10 +90,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userJpaRepository.findByUsername(username);
 
+        if(user.isEmpty()){
+            user = userJpaRepository.findByEmail(username);
+        }
+
         if(user.isEmpty()) {
             throw new UsernameNotFoundException("User: " + username + "not found");
         }
         User userDetails = user.get();
         return new org.springframework.security.core.userdetails.User(userDetails.getUsername(), userDetails.getPassword(), List.of(new SimpleGrantedAuthority(userDetails.getRole().name())));
+    }
+    @Override
+    public User findByEmail(String email) {
+        return this.userJpaRepository.findByEmail(email).orElse(null);
     }
 }
