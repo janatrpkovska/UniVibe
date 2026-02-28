@@ -54,6 +54,15 @@ function SiteNavbar() {
             За нас
           </Nav.Link>
 
+          <Nav.Link
+              as={NavLink}
+              to="/search"
+              style={navStyle}
+              className="nav-link"
+          >
+            Пребарај
+          </Nav.Link>
+
           {isAuthenticated && (
             <Nav.Link
               as={NavLink}
