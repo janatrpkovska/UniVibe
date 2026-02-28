@@ -10,6 +10,7 @@ import AddEventForm from "./Components/AddEventForm";
 import Event from "./Components/Event";
 import Login from "./Components/Login";
 import Register from "./Components/Register";
+import SavedEvents from "./Components/SavedEvents";
 import ScrollToHash from "./ScrollToHash";
 import "./App.css";
 import { AuthProvider, useAuth } from "./util/AuthProvider";
@@ -44,6 +45,7 @@ function AppRoutes() {
             <Route path="/search" element={<Search />} />
             <Route path="/events/new" element={<AddEventForm />} />
             <Route path="/event/:id" element={<Event />} />
+            <Route path="/saved-events" element={<SavedEvents />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Routes>

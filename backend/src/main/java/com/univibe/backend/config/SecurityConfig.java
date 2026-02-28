@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 "/api/newsletter/**" )
 
                                 .permitAll()
+                        .requestMatchers("/api/saved-events/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
