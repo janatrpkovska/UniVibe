@@ -446,12 +446,8 @@ export default function SearchPage() {
   }, []);
 
   useEffect(() => {
-    setPage(0);
-  }, [keyword, category, faculty, date]);
-
-  useEffect(() => {
     fetchEvents();
-  }, [page, keyword, category, faculty, date]);
+  }, [page]);
 
   useEffect(() => {
     if (location.state?.scrollToForm && formRef.current) {
