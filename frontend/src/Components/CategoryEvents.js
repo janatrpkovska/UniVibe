@@ -125,7 +125,7 @@ const categoriesConfig = {
   workshops: { name: "Работилници", events: [] },
 };
 
-const EVENTS_PER_PAGE = 10;
+const EVENTS_PER_PAGE = 20;
 
 const paginationBtn = {
   padding: "8px 16px",
@@ -137,81 +137,71 @@ const paginationBtn = {
 };
 
 function CategoryPagination({ page, setPage, totalPages, size, totalResults }) {
-  const displayTotalPages = Math.max(1, totalPages);
   return (
-    <div
-      style={{
-        width: "100%",
-        paddingBottom: "30px",
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
       <div
-        style={{
-          width: "900px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
+          style={{
+            width: "100%",
+            paddingBottom: "30px",
+            display: "flex",
+            justifyContent: "center",
+          }}
       >
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
+        <div
             style={{
-              ...paginationBtn,
-              ...(page === 0 ? { color: "#999", cursor: "default" } : {}),
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
-            disabled={page === 0}
-            onClick={() => setPage(0)}
-          >
-            First
-          </button>
-          <button
-            style={{
-              ...paginationBtn,
-              ...(page === 0 ? { color: "#999", cursor: "default" } : {}),
-            }}
-            disabled={page === 0}
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
-          >
-            Previous
-          </button>
-          <span
-            style={{
-              ...paginationBtn,
-              backgroundColor: "#013C58",
-              color: "white",
-              borderColor: "#013C58",
-            }}
-          >
-            {page + 1} / {displayTotalPages}
-          </span>
-          <button
-            style={{
-              ...paginationBtn,
-              ...(page + 1 >= totalPages ? { color: "#999", cursor: "default" } : {}),
-            }}
-            disabled={page + 1 >= totalPages}
-            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-          >
-            Next
-          </button>
-          <button
-            style={{
-              ...paginationBtn,
-              ...(page + 1 >= totalPages ? { color: "#999", cursor: "default" } : {}),
-            }}
-            disabled={page + 1 >= totalPages}
-            onClick={() => setPage(Math.max(0, totalPages - 1))}
-          >
-            Last
-          </button>
-        </div>
-        <div style={{ fontSize: "14px", color: "#333" }}>
-          Резултати по страна: <b>{size}</b> | Вкупно: <b>{totalResults}</b>
+        >
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button style={paginationBtn} disabled={page === 0} onClick={() => setPage(0)}>
+              First
+            </button>
+
+            <button style={paginationBtn} disabled={page === 0} onClick={() => setPage(page - 1)}>
+              Previous
+            </button>
+
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              {Array.from({ length: totalPages }, (_, index) => {
+                const pageNumber = index;
+
+                return (
+                    <button
+                        key={pageNumber}
+                        onClick={() => setPage(pageNumber)}
+                        style={{
+                          ...paginationBtn,
+                          backgroundColor: pageNumber === page ? "#013C58" : "#fff",
+                          color: pageNumber === page ? "#fff" : "#000",
+                          borderColor: "#013C58",
+                        }}
+                    >
+                      {pageNumber + 1}
+                    </button>
+                );
+              })}
+            </div>
+
+            <button style={paginationBtn} disabled={page + 1 >= totalPages} onClick={() => setPage(page + 1)}>
+              Next
+            </button>
+
+            <button
+                style={paginationBtn}
+                disabled={page + 1 >= totalPages}
+                onClick={() => setPage(totalPages - 1)}
+            >
+              Last
+            </button>
+          </div>
+
+          <div style={{ fontSize: "14px", color: "#333" }}>
+            Резултати по страна: <b>{size}</b> | Вкупно: <b>{totalResults}</b>
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 
@@ -364,7 +354,7 @@ export default function CategoryEvents() {
           </p>
         ) : (
           <>
-            <section className="events-grid">
+            <section className="events-view">
               {eventsToShow.map((event) => (
                 <article key={event.id} className="event-card">
                   <div className="event-image">
@@ -373,7 +363,6 @@ export default function CategoryEvents() {
 
                   <div className="event-body">
                     <h3 className="event-title">{event.title}</h3>
-                    {event.eventType && <div className="event-type-chip">{event.eventType}</div>}
                     <p className="event-date">{event.date}</p>
 
                     <button type="button" className="event-details-btn" onClick={() => goToEventDetails(event.id)}>

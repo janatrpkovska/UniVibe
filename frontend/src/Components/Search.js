@@ -1,5 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import "./CategoryEvents.css";
+import {Image} from "react-bootstrap";
 
 function StudentsSection() {
   return (
@@ -218,70 +220,40 @@ function EventsGrid({ events, totalResults }) {
         margin: "50px 0px",
       }}
     >
-      <div style={{ width: "900px" }}>
+      <div style={{ width: "900px", margin: "0 auto" }}>
         <p style={{ fontSize: "18px", marginBottom: "16px" }}>
           Вкупно резултати од пребарувањето: <b>{totalResults}</b>
         </p>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "24px",
-          }}
-        >
-          {events.map((event) => (
-            <div
-              key={event.id}
-              style={{
-                backgroundColor: "#E0FFFF",
-                padding: "16px",
-                borderRadius: "12px",
-                boxShadow: "0px 2px 6px rgba(0,0,0,0.1)",
-              }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  height: "170px",
-                  backgroundColor: "#ddd",
-                  borderRadius: "8px",
-                  marginBottom: "12px",
-                  backgroundImage: `url(${event.image_url || "/placeholder.png"})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              ></div>
+          <section className="events-view">
+              {events.map((event) => (
+                  <article key={event.id} className="event-card">
+                      <div className="event-image" style={{ objectFit: "cover" }}>
+                          <Image
+                              src={event.image_url!==null?`/event_images/${event.image_url}`:`/logo.png`}
+                              alt={event.title}
+                              fluid
+                          />
+                      </div>
 
-              <h4 style={{ fontWeight: "bold", marginBottom: "8px" }}>{event.title}</h4>
+                      <div className="event-body">
+                          <h3 className="event-title">{event.title}</h3>
+                          <p className="event-date">{event.date}</p>
 
-              <p style={{ fontSize: "14px", marginBottom: "4px" }}>
-                <b>Датум:</b> {new Date(event.startDate).toLocaleDateString("mk-MK")}
-                {event.endDate && <> - {new Date(event.endDate).toLocaleDateString("mk-MK")}</>}
-              </p>
-
-              <p style={{ fontSize: "14px", marginBottom: "12px" }}>
-                <b>Локација:</b> {event.location}
-              </p>
-
-              <Link to={`/event/${event.id}`}>
-                <button
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    backgroundColor: "#FFB701",
-                    color: "black",
-                    border: "none",
-                    borderRadius: "8px",
-                    marginTop: "10px",
-                  }}
-                >
-                  Детали
-                </button>
-              </Link>
-            </div>
-          ))}
-        </div>
+                          <Link to={`/event/${event.id}`}
+                                style={{
+                                    display: "flex",
+                                    marginTop: "auto",
+                                    justifyContent: "center",
+                                    textDecoration: "none" }}>
+                              <button type="button" className="event-details-btn">
+                                  Детали
+                              </button>
+                          </Link>
+                      </div>
+                  </article>
+              ))}
+          </section>
       </div>
     </div>
   );
