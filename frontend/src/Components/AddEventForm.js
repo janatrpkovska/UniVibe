@@ -14,7 +14,6 @@ const CATEGORY_OPTIONS = [
   { id: "workshops", name: "Работилници" },
 ];
 
-// Map category ID to name
 const getCategoryName = (categoryId) => {
   const category = CATEGORY_OPTIONS.find(c => c.id === categoryId);
   return category ? category.name : "";
@@ -51,8 +50,8 @@ export default function AddEventForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { token, user, isAuthenticated } = useAuth();
+  const [faculties, setFaculties] = useState([]);
 
-  // Check if user is admin
   const isAdmin = user && user.role === "ROLE_ADMIN";
 
   useEffect(() => {
@@ -62,6 +61,24 @@ export default function AddEventForm() {
       setError("Само администратори можат да додаваат настани.");
     }
   }, [isAuthenticated, isAdmin]);
+
+  useEffect(() => {
+    const fetchFaculties = async () => {
+      try {
+        const res = await fetch("http://localhost:9091/api/faculty/public/get-all");
+        if (!res.ok) {
+          setFaculties([]);
+          return;
+        }
+        const data = await res.json();
+        setFaculties(data);
+      } catch (e) {
+        setFaculties([]);
+      }
+    };
+
+    fetchFaculties();
+  }, []);
 
   const selectedTypeLabel = useMemo(() => {
     const found = EVENT_TYPE_OPTIONS.find((t) => t.id === form.eventTypeId);
@@ -98,17 +115,6 @@ export default function AddEventForm() {
     if (!form.time) return "Одбери време.";
     if (!form.location.trim()) return "Внеси локација.";
     return "";
-  };
-
-  const saveLocal = (payload) => {
-    const existing = JSON.parse(localStorage.getItem("events") || "[]");
-    const newEvent = {
-      id: Date.now(),
-      ...payload,
-      icon: "✨",
-      source: "local",
-    };
-    localStorage.setItem("events", JSON.stringify([newEvent, ...existing]));
   };
 
   const onSubmit = async (e) => {
@@ -282,12 +288,18 @@ export default function AddEventForm() {
           <Col md={6}>
             <Form.Group className="mb-0">
               <Form.Label>Факултет (опционално)</Form.Label>
-              <Form.Control
-                name="faculty"
-                value={form.faculty}
-                onChange={onChange}
-                placeholder="Пр. ФИНКИ"
-              />
+              <Form.Select
+                  name="faculty"
+                  value={form.faculty}
+                  onChange={onChange}
+              >
+                <option value="">Сите факултети</option>
+                {faculties.map((faculty) => (
+                    <option key={faculty.id} value={faculty.name}>
+                      {faculty.name}
+                    </option>
+                ))}
+              </Form.Select>
             </Form.Group>
           </Col>
         </Row>
