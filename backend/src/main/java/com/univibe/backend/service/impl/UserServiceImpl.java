@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userJpaRepository.findByEmail(username);
+        Optional<User> user = userJpaRepository.findByUsername(username);
 
         if(user.isEmpty()){
             user = userJpaRepository.findByEmail(username);

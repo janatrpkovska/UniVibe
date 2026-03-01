@@ -30,6 +30,21 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(authRequest.getIdentifier(), authRequest.getPassword())
         );
         if (authentication.isAuthenticated()) {
+            User user = userService.findByEmail(authRequest.getIdentifier());
+            String role = user != null ? user.getRole().name() : "ROLE_USER";
+            String token = jwtService.generateToken(authRequest.getIdentifier(), role);
+            return ResponseEntity.ok(Map.of("token", token));
+        } else {
+            throw new UsernameNotFoundException("Invalid user request!");
+        }
+    }
+
+    @PostMapping("/form-login")
+    public ResponseEntity<String> loginFromForm(@RequestBody AuthRequest authRequest){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.getIdentifier(), authRequest.getPassword())
+        );
+        if (authentication.isAuthenticated()) {
             User user = userService.findByUsername(authRequest.getIdentifier());
             if (user == null) {
                 user = userService.findByEmail(authRequest.getIdentifier());
