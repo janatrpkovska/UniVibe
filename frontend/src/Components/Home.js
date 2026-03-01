@@ -46,7 +46,12 @@ function EventCard() {
                 {event.description}
               </p>
               <p className="event-date">{event.startDate}</p>
-              <Link to={`/event/${event.id}`}>
+              <Link to={`/event/${event.id}`}
+                    style={{
+                        display: "flex",
+                        marginTop: "auto",
+                        justifyContent: "center",
+                        textDecoration: "none" }}>
                 <button type="button" className="event-details-btn">
                   Детали
                 </button>
