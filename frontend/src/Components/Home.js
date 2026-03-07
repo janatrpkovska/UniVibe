@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import "./CategoryEvents.css";
 import "../style/animation.css"
 import axios from "axios";
+import NewsletterPopup from "./NewsletterPopup";
 
 function EventCard() {
   const [events, setEvents ]= useState([])
@@ -111,6 +112,7 @@ export default function Home() {
 
   return (
     <>
+        <NewsletterPopup />
       <div style={{ position: "relative", textAlign: "center" }}>
         <Image
           src="background.png"

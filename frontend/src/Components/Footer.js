@@ -12,7 +12,6 @@ export default function Footer(){
             setMessage("Внеси email адреса");
             return;
         }
-
         try {
             const res = await fetch("http://localhost:9091/api/newsletter/subscribe", {
                 method: "POST",
@@ -20,21 +19,17 @@ export default function Footer(){
                 body: JSON.stringify({ email }),
             });
 
-            const text = await res.text();
-
+            const data = await res.json();
             if (!res.ok) {
-                throw new Error(text);
+                throw new Error(data.message);
             }
-
-            setMessage(text);
+            setMessage(data.message);
             setEmail("");
         } catch (err) {
             console.error("FETCH ERROR:", err);
             setMessage("Настана грешка, пробај повторно");
         }
     };
-
-
 
     return(
         <Container
@@ -45,12 +40,23 @@ export default function Footer(){
             className="text-center py-3 bg-light"
             >
             <div className="d-flex justify-content-center gap-5 mb-3">
-                <FaInstagram size={30} color="#E1306C" />
-                <FaFacebook size={30} color="#547fffff" />
-                <FaTwitter size={30} color="#69cdffff" />
-                <a href="mailto:univibe2025@yahoo.com" >
+
+                <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+                    <FaInstagram size={30} color="#E1306C" />
+                </a>
+
+                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+                    <FaFacebook size={30} color="#547fffff" />
+                </a>
+
+                <a href="https://x.com/" target="_blank" rel="noopener noreferrer">
+                    <FaTwitter size={30} color="#69cdffff" />
+                </a>
+
+                <a href="https://login.yahoo.com/" target="_blank" rel="noopener noreferrer">
                     <FaYahoo size={30} color="#6B2FB9" />
                 </a>
+
             </div>
             <div style={{ fontSize: "20px" }}>Не пропуштајте универзитетски настани <input
                 type="email"
@@ -101,7 +107,7 @@ export default function Footer(){
                     }}
                     className="focus-outline my-4 mx-2"
                 >
-                    Subscribe
+                    Претплати се
                 </Button>
                 {message && (
                     <div
