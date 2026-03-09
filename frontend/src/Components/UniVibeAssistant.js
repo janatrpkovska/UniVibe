@@ -14,6 +14,7 @@ export default function UniVibeAssistant() {
     const [loginEmail, setLoginEmail] = useState("");
     const [newsletterSuccess, setNewsletterSuccess] = useState(false);
     const [newsletterShown, setNewsletterShown] = useState(false);
+    const [aiMessageCount, setAiMessageCount] = useState(0);
     const [aiEnabled, setAiEnabled] = useState(false);
 
     const initialMessage = useMemo(() => ({
@@ -24,7 +25,7 @@ export default function UniVibeAssistant() {
                 <br/> <br/>
                 Јас сум твој AI асистент и тука сум да ти помогнам со настани, пребарување и пријавување.
                 <br/> <br/>
-                Што те интересира? 😊
+                Можеш да прашаш за настани, регистрација или најава. Што те интересира? 
             </>
         ),
         time: new Date(),
@@ -74,6 +75,82 @@ useEffect(() => {
     if (e) e.preventDefault();
 
     const trimmed = input.trim();
+    const lower = trimmed.toLowerCase();
+    // greeting detection 
+if (
+  lower === "здраво" ||
+  lower === "hello" ||
+  lower === "hi" ||
+  lower === "hej"
+) {
+  setMessages(prev => [
+    ...prev,
+    { from: "user", text: trimmed, time: new Date() },
+    {
+      from: "bot",
+      text: "Здраво! 😊\n\nМожам да ти помогнам со:\n• настани\n• регистрација\n• најава\n\nШто те интересира?",
+      time: new Date()
+    }
+  ]);
+  setInput("");
+  return;
+}
+
+    // helpful fallback responses
+if (lower.includes("help") || lower.includes("помош") || lower.includes("што можам")) {
+  setMessages(prev => [
+    ...prev,
+    { from: "user", text: trimmed, time: new Date() },
+    {
+      from: "bot",
+      text: "Можам да ти помогнам со:\n\n• Пребарување настани\n• Регистрација\n• Најава\n• Newsletter за нови настани\n\nПробај да напишеш:\n\"настани\" или \"регистрација\" 😊",
+      time: new Date()
+    }
+  ]);
+  setInput("");
+  return;
+}
+
+// fallback intent detection (when AI is off)
+if (!aiEnabled) {
+
+  if (lower.includes("najava") || lower.includes("најава") || lower.includes("login")) {
+    setLoginStep("EMAIL");
+    setMessages(prev => [
+      ...prev,
+      { from: "user", text: trimmed, time: new Date() },
+      { from: "bot", text: "Внеси email 📧", time: new Date() }
+    ]);
+    setInput("");
+    return;
+  }
+
+ if (lower.includes("registracija") || lower.includes("регистрација") || lower.includes("register")) {
+
+  setMessages(prev => [
+    ...prev,
+    { from: "user", text: trimmed, time: new Date() },
+
+    {
+      from: "bot",
+      text: "✨ Можеш да се регистрираш на два начина:\n\n1️⃣ Преку формата на страницата",
+      action: "REGISTER_FORM_OPTION",
+      time: new Date()
+    },
+
+    {
+      from: "bot",
+      text: "2️⃣ Тука во чатот\nЗа да започнеме со регистрација, напиши го твоето име 👇",
+      time: new Date()
+    }
+  ]);
+
+  setRegisterStep("FIRST_NAME");
+  setInput("");
+  return;
+}
+
+}
     if (!trimmed) return;
 
     // LOGIN FLOW
@@ -127,7 +204,7 @@ if (registerStep) {
             setMessages(prev => [
                 ...prev,
                 { from: "user", text: trimmed, time: new Date() },
-                { from: "bot", text: "Внеси email", time: new Date() }
+                { from: "bot", text: "📧 Внеси email", time: new Date() }
             ]);
             break;
 
@@ -174,12 +251,13 @@ if (registerStep) {
 } 
 
 const userMsg = { from: "user", text: trimmed, time: new Date() };
-const thinkingMsg = { from: "bot", text: "Се размислува... 🤔", time: new Date() };
+const thinkingMsg = { from: "bot", text: "Размислувам... 🤔", time: new Date() };
 
 setMessages((prev) => [...prev, userMsg, thinkingMsg]);
 setInput("");
 
 const aiResponse = await fetchAIResponse(trimmed);
+setAiMessageCount(prev => prev + 1);
 
     setMessages((prev) => {
     const withoutThinking = prev.slice(0, -1);
@@ -208,7 +286,7 @@ if (aiResponse.action === "REGISTER") {
     !newsletterShown &&
     !registerStep &&
     !loginStep &&
-    trimmed.length > 10 &&
+    aiMessageCount >= 3 &&
     !trimmed.toLowerCase().includes("здраво") &&
     !trimmed.toLowerCase().includes("добар")
 )
@@ -257,7 +335,7 @@ const sendEmail = async () => {
 
         const data = await res.json();
 
-        const isAlreadySubscribed = data.message.includes("Веќе");
+        const isAlreadySubscribed = data?.message?.includes("Веќе");
 
         setMessages(prev => [
             ...prev,
@@ -288,13 +366,31 @@ const sendEmail = async () => {
 
 const handleLogin = async (email, password) => {
     try {
-        const response = await fetch("http://localhost:9091/api/auth/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ username: email, password })
-        });
+       let identifier = email;
+
+let response = await fetch("http://localhost:9091/api/auth/form-login", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ identifier, password })
+});
+
+
+// ако login со email не успее → пробај со username
+if (!response.ok && email.includes("@")) {
+
+    const username = email.split("@")[0];
+
+    response = await fetch("http://localhost:9091/api/auth/form-login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ identifier: username, password })
+    });
+
+}
 
         if (!response.ok) {
             setMessages(prev => [
@@ -310,8 +406,7 @@ const handleLogin = async (email, password) => {
             return;
         }
 
-        const data = await response.json();
-        const token = data.token;
+        const token = await response.text();
 
         if (!token) {
             setMessages(prev => [
@@ -360,7 +455,7 @@ const handleRegister = async (data) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: data.email,
+                username: data.email.split("@")[0],
                 password: data.password,
                 email: data.email,
                 firstName: data.firstName,
@@ -378,7 +473,7 @@ const handleRegister = async (data) => {
             return;
         }
 
-        // ✅ Тука ја ставаме финалната порака
+        //Тука ја ставаме финалната порака
         setMessages(prev => [
             ...prev,
             { 
@@ -453,18 +548,71 @@ const handleRegister = async (data) => {
                         ${m.success ? "uv-success-bubble" : ""}`}>
                                         <>
                                 {m.text}
+                                {idx === 0 && (
+  <div className="uv-quick-actions">
+    <button
+      className="uv-action-btn"
+      onClick={() => {
+        setInput("настани");
+        sendMessage();
+      }}
+    >
+      📅 Настани
+    </button>
+
+    <button
+      className="uv-action-btn"
+      onClick={() => {
+        setInput("најава");
+        sendMessage();
+      }}
+    >
+      🔐 Најава
+    </button>
+
+    <button
+      className="uv-action-btn"
+      onClick={() => {
+        setInput("регистрација");
+        sendMessage();
+      }}
+    >
+      ✨ Регистрација
+    </button>
+  </div>
+)}
 
                                {m.action === "REGISTER" && (
-                                <div className="uv-action-wrapper">
-                                    <button
-                                        className="uv-action-btn"
-                                        onClick={() => window.location.href = "/register"}
-                                    >
-                                        ✨ Регистрирај се
-                                    </button>
-                                </div>
-                            )}
+                        <div className="uv-action-wrapper">
+                        <button
+                        className="uv-action-btn"
+                        onClick={() => {
+                        setRegisterStep("FIRST_NAME");
+                        setMessages(prev => [
+                        ...prev,
+                        {
+                        from: "bot",
+                        text: "Ајде да те регистрираме 😊\n\nВнеси име:",
+                        time: new Date()
+                        }
+                        ]);
+                        }}
+                        >
+                        ✨ Регистрирај се
+                        </button>
+                        </div>
+                        )}
 
+                        {m.action === "REGISTER_FORM_OPTION" && (
+                        <div className="uv-action-wrapper">
+                            <button
+                            className="uv-action-btn"
+                            onClick={() => window.location.href = "/register"}
+                            >
+                            📄 Регистрација преку форма
+                            </button>
+                        </div>
+                        )}
 
                              {m.action === "FORGOT_PASSWORD" && (
                                     <div>
