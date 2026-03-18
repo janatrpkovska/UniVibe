@@ -5,20 +5,15 @@ import com.univibe.backend.repository.NewsletterSubscriberRepository;
 import com.univibe.backend.service.MailSenderService;
 import com.univibe.backend.service.NewsletterService;
 import org.springframework.stereotype.Service;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 
 @Service
 public class NewsletterServiceImpl implements NewsletterService {
-
     private final NewsletterSubscriberRepository repository;
     private final MailSenderService mailSenderService;
     private final String BASE_URL = "http://localhost:9091";
 
-    public NewsletterServiceImpl(NewsletterSubscriberRepository repository,
-                                 MailSenderService mailSenderService) {
+    public NewsletterServiceImpl(NewsletterSubscriberRepository repository, MailSenderService mailSenderService) {
         this.repository = repository;
         this.mailSenderService = mailSenderService;
     }
@@ -42,19 +37,19 @@ public class NewsletterServiceImpl implements NewsletterService {
 
        if (repository.findByEmail(email).isPresent()) {
             return "Веќе си на листата 😊\n\nНаскоро ќе добиеш нови информации на email.";
-        }
-        NewsletterSubscriber subscriber = new NewsletterSubscriber();
-        subscriber.setEmail(email);
-        repository.save(subscriber);
+       }
 
-        String html = "<html><body>" +
-                "<h2>ДОБРЕДОЈДОВТЕ во UniVibe 🎉</h2>" +
-                "<p>Ви благодариме што се претплативте!</p>" +
-                "<p><a href='" + BASE_URL + "/api/newsletter/unsubscribe?email=" + email + "'>Unsubscribe</a></p>" +
-                "</body></html>";
+       NewsletterSubscriber subscriber = new NewsletterSubscriber();
+       subscriber.setEmail(email);
+       repository.save(subscriber);
 
+       String html = "<html><body>" +
+               "<h2>ДОБРЕДОЈДОВТЕ во UniVibe 🎉</h2>" +
+               "<p>Ви благодариме што се претплативте!</p>" +
+               "<p><a href='" + BASE_URL + "/api/newsletter/unsubscribe?email=" + email + "'>Unsubscribe</a></p>" +
+               "</body></html>";
 
-        mailSenderService.sendHtmlMail(email, "Welcome to UniVibe 🎓", html);
+       mailSenderService.sendHtmlMail(email, "Welcome to UniVibe 🎓", html);
 
        return "💌 Ти благодариме!\n\nЌе те известуваме за нови универзитетски настани ✨";
     }

@@ -45,10 +45,7 @@ public class EventServiceImpl implements EventService {
         event.setSource(EventSource.MANUAL);
 
         Event savedEvent = eventJpaRepository.save(event);
-        newsletterService.sendNewEventEmail(
-                savedEvent.getTitle(),
-                savedEvent.getDescription()
-        );
+        newsletterService.sendNewEventEmail(savedEvent.getTitle(), savedEvent.getDescription());
 
         return savedEvent;
     }
@@ -68,6 +65,7 @@ public class EventServiceImpl implements EventService {
         event.setCategory(category);
         event.setStatus(status);
         event.setSource(source);
+
         return eventJpaRepository.save(event);
     }
 
@@ -80,6 +78,7 @@ public class EventServiceImpl implements EventService {
     public Event deleteEvent(Long id) {
         Event toDelete = this.findById(id);
         eventJpaRepository.delete(toDelete);
+
         return toDelete;
     }
 
@@ -107,21 +106,27 @@ public class EventServiceImpl implements EventService {
         if (filter.getCategory() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("category"), filter.getCategory()));
         }
+
         if (filter.getEventType() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("eventType"), filter.getEventType()));
         }
+
         if (filter.getFaculty() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("faculty"), filter.getFaculty()));
         }
+
         if (filter.getStatus() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), filter.getStatus()));
         }
+
         if (filter.getMode() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("mode"), filter.getMode()));
         }
+
         if (filter.getLocation() != null && !filter.getLocation().isEmpty()) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("location"), filter.getLocation()));
         }
+
         if (filter.getStartDate() != null) {
             LocalDate selectedDate = filter.getStartDate();
             spec = spec.and((root, query, cb) -> cb.or(

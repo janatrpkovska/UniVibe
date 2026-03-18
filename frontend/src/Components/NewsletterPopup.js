@@ -39,7 +39,7 @@ function NewsletterPopup() {
                 } else if (message.includes("Невалидна email адреса")) {
                     alert("Невалидна email адреса");
                 } else {
-                    alert(message); // success message from backend
+                    alert(message);
                     localStorage.setItem("newsletterSubscribed", "true");
                     setShow(false);
                 }

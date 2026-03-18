@@ -11,7 +11,6 @@ const Login = () => {
   const navigate = useNavigate()
   const [ wrongCredentials, setWrongCredentials ] = useState(false)
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 

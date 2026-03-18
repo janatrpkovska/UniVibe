@@ -5,8 +5,6 @@ function Icon({ name, alt }) {
   return <img src={`/icons/${name}`} alt={alt || name} className="uv-inline-icon" />;
 }
 
-
-
 export default function UniVibeAssistant() {
     const [open, setOpen] = useState(false);
     const messagesEndRef = useRef(null);
@@ -70,13 +68,12 @@ useEffect(() => {
     }
 };
 
-
     const sendMessage = async (e) => {
     if (e) e.preventDefault();
 
     const trimmed = input.trim();
     const lower = trimmed.toLowerCase();
-    // greeting detection 
+
 if (
   lower === "здраво" ||
   lower === "hello" ||
@@ -96,7 +93,6 @@ if (
   return;
 }
 
-    // helpful fallback responses
 if (lower.includes("help") || lower.includes("помош") || lower.includes("што можам")) {
   setMessages(prev => [
     ...prev,
@@ -111,7 +107,6 @@ if (lower.includes("help") || lower.includes("помош") || lower.includes("ш
   return;
 }
 
-// fallback intent detection (when AI is off)
 if (!aiEnabled) {
 
   if (lower.includes("najava") || lower.includes("најава") || lower.includes("login")) {
@@ -153,7 +148,6 @@ if (!aiEnabled) {
 }
     if (!trimmed) return;
 
-    // LOGIN FLOW
 if (loginStep === "EMAIL") {
 
     setMessages(prev => [
@@ -168,7 +162,6 @@ if (loginStep === "EMAIL") {
     return;
 }
 
-
 if (loginStep === "PASSWORD") {
 
     setMessages(prev => [
@@ -182,7 +175,6 @@ if (loginStep === "PASSWORD") {
     return;
 }
 
-// REGISTER FLOW
 if (registerStep) {
 
     const updatedData = { ...registerData };
@@ -280,7 +272,6 @@ if (aiResponse.action === "REGISTER") {
     setRegisterStep("FIRST_NAME");
     }
 
-    // newsletter trigger (се појавува само еднаш)
     if (
     aiResponse.action === "NONE" &&
     !newsletterShown &&
@@ -300,14 +291,9 @@ if (aiResponse.action === "REGISTER") {
 
     setNewsletterShown(true);
 }
-
     return newMessages;
 });
-
-
 };
-
-
 
 const sendEmail = async () => {
     if (!email || newsletterSuccess) return;
@@ -377,7 +363,7 @@ let response = await fetch("http://localhost:9091/api/auth/form-login", {
 });
 
 
-// ако login со email не успее → пробај со username
+// ако login со email не успее, пробај со username
 if (!response.ok && email.includes("@")) {
 
     const username = email.split("@")[0];
@@ -391,7 +377,6 @@ if (!response.ok && email.includes("@")) {
     });
 
 }
-
         if (!response.ok) {
             setMessages(prev => [
                 ...prev,
@@ -473,7 +458,6 @@ const handleRegister = async (data) => {
             return;
         }
 
-        //Тука ја ставаме финалната порака
         setMessages(prev => [
             ...prev,
             { 

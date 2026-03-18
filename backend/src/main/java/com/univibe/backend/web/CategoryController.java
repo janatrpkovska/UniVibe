@@ -34,20 +34,13 @@ public class CategoryController {
     @PostMapping("/create-category")
     @PreAuthorize("hasRole('ADMIN')")
     public Category createCategory(@RequestBody Category category) {
-        return categoryService.addCategory(
-                category.getName(),
-                category.getIcon_url()
-        );
+        return categoryService.addCategory(category.getName(), category.getIcon_url());
     }
 
     @PostMapping("/update-category")
     @PreAuthorize("hasRole('ADMIN')")
     public Category updateCategory(@RequestBody Category category) {
-        return categoryService.updateCategory(
-                category.getId(),
-                category.getName(),
-                category.getIcon_url()
-        );
+        return categoryService.updateCategory(category.getId(), category.getName(), category.getIcon_url());
     }
 
     @DeleteMapping("/delete/{id}")

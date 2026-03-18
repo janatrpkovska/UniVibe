@@ -87,26 +87,20 @@ public class EventController {
                 ? LocalDate.parse(request.getEndDate())
                 : LocalDate.parse(request.getDate());
 
-        // Look up or create category
         Category category = categoryService.getCategoryByName(request.getCategoryName());
         if (category == null) {
-            // Create category if it doesn't exist
             category = categoryService.addCategory(request.getCategoryName(), "");
         }
 
-        // Look up or create event type
         EventType eventType = eventTypeService.findEventTypeByName(request.getEventTypeName());
         if (eventType == null) {
-            // Create event type if it doesn't exist
             eventType = eventTypeService.createEventType(request.getEventTypeName());
         }
 
-        // Look up or create faculty (optional)
         Faculty faculty = null;
         if (request.getFacultyName() != null && !request.getFacultyName().trim().isEmpty()) {
             faculty = facultyService.findByName(request.getFacultyName());
             if (faculty == null) {
-                // Create faculty if it doesn't exist
                 faculty = facultyService.createFaculty(request.getFacultyName());
             }
         }

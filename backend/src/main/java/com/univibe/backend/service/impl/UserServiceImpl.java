@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setRole(role);
         user.setTelephone(telephone);
         user.setCity(city);
+
         return userJpaRepository.save(user);
     }
 
@@ -97,12 +98,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if(user.isEmpty()) {
             throw new UsernameNotFoundException("User: " + username + "not found");
         }
+
         User userDetails = user.get();
+
         return new org.springframework.security.core.userdetails.User(
-        userDetails.getEmail(),
-        userDetails.getPassword(),
-        List.of(new SimpleGrantedAuthority("ROLE_" + userDetails.getRole().name()))
-);
+            userDetails.getEmail(),
+            userDetails.getPassword(),
+            List.of(new SimpleGrantedAuthority("ROLE_" + userDetails.getRole().name()))
+        );
     }
   
     @Override

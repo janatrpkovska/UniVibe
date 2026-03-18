@@ -42,6 +42,7 @@ public class UserController {
         createdUserDTO.setUsername(createdUser.getUsername());
         createdUserDTO.setCity(createdUser.getCity());
         createdUserDTO.setTelephone(createdUser.getTelephone());
+
         return createdUserDTO;
     }
 
@@ -50,6 +51,7 @@ public class UserController {
         if (currentUser == null || !Objects.equals(currentUser.getId(), userDTO.getId())) {
             return null;
         }
+
         User updatedUser = userService.update(
                 userDTO.getId(),
                 userDTO.getUsername(),
@@ -70,6 +72,7 @@ public class UserController {
         updatedUserDTO.setUsername(updatedUser.getUsername());
         updatedUserDTO.setCity(updatedUser.getCity());
         updatedUserDTO.setTelephone(updatedUser.getTelephone());
+
         return updatedUserDTO;
     }
 
@@ -78,13 +81,16 @@ public class UserController {
         if (currentUser == null || !Objects.equals(currentUser.getId(), pcr.getId())) {
             return "User not authorized";
         }
+
         String result = "";
-       try {
+
+        try {
            result = userService.updatePassword(pcr.getId(), pcr.getOldPassword(), pcr.getNewPassword());
-       }
-       catch (Exception e) {
+        }
+        catch (Exception e) {
            return e.getMessage();
-       }
-       return result;
+        }
+
+        return result;
     }
 }

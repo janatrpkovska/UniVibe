@@ -50,7 +50,6 @@ export default function AboutUs() {
 
   return (
     <div style={{ overflow: "hidden"}}>
-        {/* === SECTION 1  === */}
     <div
         style={{
             backgroundColor: "#2a6d89",
@@ -63,7 +62,6 @@ export default function AboutUs() {
             gap: "40px",                  
         }}
     >
-        {/* Left Image with Diagonal Mask */}
         <div
             style={{
                 width: "48%",
@@ -74,7 +72,6 @@ export default function AboutUs() {
             }}
         />
 
-        {/* ABOUT US Title */}
         <h1
             style={{
                 position: "absolute",
@@ -91,7 +88,6 @@ export default function AboutUs() {
             ABOUT US
         </h1>
 
-        {/* Repeating UniVibe Background Text */}
         <div
             style={{
                 position: "absolute",
@@ -111,7 +107,6 @@ export default function AboutUs() {
             UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe
         </div>
 
-        {/* Paragraph Box */}
         <div
             style={{
                 width: "40%",
@@ -131,8 +126,6 @@ export default function AboutUs() {
         </div>
     </div>
 
-
-            {/* ========== SECTION 3 ========== */}
       <section
         style={{
           background: "#82C6D9",
@@ -143,7 +136,6 @@ export default function AboutUs() {
           alignItems: "flex-start",
         }}
       >
-        {/* Repeating UniVibe background text on the RIGHT */}
         <div
           style={{
             position: "absolute",
@@ -163,7 +155,6 @@ export default function AboutUs() {
           UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe UniVibe
         </div>
 
-        {/* TITLE + BUTTON ROW */}
         <div
           style={{
             display: "flex",
@@ -205,7 +196,6 @@ export default function AboutUs() {
             </Button>
         </div>
 
-        {/* BULLET LIST */}
         <p
           style={{
             listStyle: "none",
@@ -221,9 +211,6 @@ export default function AboutUs() {
         >
             UniVibe служи како твој централен простор за откривање на најразлични студентски активности. На платформата можеш брзо да пребаруваш настани според интерес, било да се академски, културни или забавни. Од најнови работилници и научни предавања, па сѐ до концерти, фестивали и дружења, UniVibe ги обединува сите информации на едно место. Дополнително, апликацијата ти овозможува да се поврзеш со студенти од различни факултети и да ја прошириш својата заедница. Избери категорија – Технологија, Кариера, Истражување, Култура, Здравје, Едукација или Забава – и откриј ги сите можности што ги нуди UniVibe.        </p>
       </section>
-
-
-        {/* ========== SECTION 4 ========== */}
         
         <section
         style={{
@@ -236,7 +223,6 @@ export default function AboutUs() {
             
         }}
         >
-        {/* LEFT BOTTOM CORNER SILHOUETTES */}
         <div
             style={{
             position: "absolute",
@@ -254,7 +240,6 @@ export default function AboutUs() {
             }}
         ></div>
 
-        {/* RIGHT TEXT */}
         <div
             style={{
             width: "55%",
@@ -328,17 +313,14 @@ export default function AboutUs() {
               href="mailto:univibe2025@yahoo.com"
               style={{
                 color: "#bd9212ff",
-                fontWeight: "700",      // задебелени букви
-                textDecoration: "underline", // подвлечен
+                fontWeight: "700",
+                textDecoration: "underline",
               }}
             >
               univibe2025@yahoo.com
             </a>
           </p>
         </section>
-
-
-
     </div>
   );
 }

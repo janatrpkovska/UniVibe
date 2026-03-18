@@ -6,17 +6,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import com.univibe.backend.service.MailSenderService;
 
-
 import java.util.List;
 
 @Service
 public class NewsletterScheduler {
-
     private final NewsletterSubscriberRepository repository;
     private final MailSenderService mailSender;
 
-    public NewsletterScheduler(NewsletterSubscriberRepository repository,
-                               MailSenderService mailSender) {
+    public NewsletterScheduler(NewsletterSubscriberRepository repository, MailSenderService mailSender) {
         this.repository = repository;
         this.mailSender = mailSender;
     }

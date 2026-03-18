@@ -2,7 +2,6 @@ import { Container, Button } from 'react-bootstrap'
 import {FaFacebook, FaInstagram, FaTwitter, FaYahoo} from "react-icons/fa";
 import { useState } from "react";
 
-
 export default function Footer(){
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
@@ -121,9 +120,7 @@ export default function Footer(){
                         {message}
                     </div>
                 )}
-
             </div>
         </Container>
-
     )
 }

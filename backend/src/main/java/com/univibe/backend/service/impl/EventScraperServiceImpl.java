@@ -71,7 +71,6 @@ public class EventScraperServiceImpl implements EventScraperService {
                 String mode =  (String) map.get("mode");
                 String image_url = (String) map.get("image_url");
 
-
                 Map<String, String> categoryMap = new HashMap<>();
 
                 categoryMap.put("tech", "Технологија");
@@ -106,7 +105,6 @@ public class EventScraperServiceImpl implements EventScraperService {
         }
     }
 
-
     public void removeEventsPresentInDatabase() {
         try {
             File eventsFile = new File("../scraper/events_raw.json");
@@ -137,7 +135,6 @@ public class EventScraperServiceImpl implements EventScraperService {
             e.printStackTrace();
         }
     }
-
 
     @Async
     public CompletableFuture<Void> runScriptsSequentially() {

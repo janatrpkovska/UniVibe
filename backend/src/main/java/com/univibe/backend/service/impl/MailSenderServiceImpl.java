@@ -22,8 +22,7 @@ public class MailSenderServiceImpl implements MailSenderService {
     public void sendHtmlMail(String email, String subject, String htmlBody) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(message, true, "UTF-8");
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setTo(email);
             helper.setSubject(subject);
