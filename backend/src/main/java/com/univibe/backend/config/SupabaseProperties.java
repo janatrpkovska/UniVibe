@@ -7,18 +7,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "supabase")
 public class SupabaseProperties {
 
-    /**
-     * Project URL, e.g. https://abcdefgh.supabase.co (no trailing slash).
-     */
     private String url = "";
 
-    /**
-     * Service role key — server-side only; never expose to the browser.
-     */
     private String serviceRoleKey = "";
 
-    /**
-     * Storage bucket name (must exist in Supabase; can be public for direct image URLs).
-     */
     private String storageBucket = "event-images";
 }

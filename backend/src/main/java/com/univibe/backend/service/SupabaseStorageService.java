@@ -28,9 +28,6 @@ public class SupabaseStorageService {
             .connectTimeout(Duration.ofSeconds(30))
             .build();
 
-    /**
-     * Uploads an image to Supabase Storage and returns the public URL (bucket must be public).
-     */
     public String uploadPublicImage(MultipartFile file) {
         if (props.getUrl() == null || props.getUrl().isBlank()
                 || props.getServiceRoleKey() == null || props.getServiceRoleKey().isBlank()) {

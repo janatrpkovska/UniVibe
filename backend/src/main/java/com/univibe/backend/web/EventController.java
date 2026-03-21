@@ -90,7 +90,6 @@ public class EventController {
     @PostMapping("/events")
     @PreAuthorize("hasRole('ADMIN')")
     public Event createEventSimple(@RequestBody CreateEventRequest request) {
-        // Parse date and time
         LocalDateTime startDate = LocalDateTime.parse(request.getDate() + "T" + request.getTime() + ":00");
         LocalDate endDate = (request.getEndDate() != null && !request.getEndDate().trim().isEmpty())
                 ? LocalDate.parse(request.getEndDate())
@@ -193,9 +192,6 @@ public class EventController {
         return eventService.filteredEvents(filter);
     }
 
-    /**
-     * Admin-only: uploads an image to Supabase Storage; returns a public URL to store on the event as imageUrl.
-     */
     @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> uploadEventImage(@RequestParam("file") MultipartFile file) {
