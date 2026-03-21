@@ -5,6 +5,7 @@ import "./CategoryEvents.css";
 import "../style/animation.css"
 import axios from "axios";
 import NewsletterPopup from "./NewsletterPopup";
+import { eventImageSrc } from "../util/eventImageUrl";
 
 function EventCard() {
   const [events, setEvents ]= useState([])
@@ -27,7 +28,7 @@ function EventCard() {
           <article key={event.id} className="event-card">
             <div className="event-image" style={{ objectFit: "cover" }}>
               <Image
-                  src={event.image_url!==null?`/event_images/${event.image_url}`:`/logo.png`}
+                  src={eventImageSrc(event.image_url)}
                   alt={event.title}
                   fluid
                 />

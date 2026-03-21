@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import React, { useEffect, useState, useRef } from "react";
 import "./CategoryEvents.css";
 import {Image} from "react-bootstrap";
+import { eventImageSrc } from "../util/eventImageUrl";
 
 function StudentsSection() {
   return (
@@ -230,7 +231,7 @@ function EventsGrid({ events, totalResults }) {
                   <article key={event.id} className="event-card">
                       <div className="event-image" style={{ objectFit: "cover" }}>
                           <Image
-                              src={event.image_url!==null?`/event_images/${event.image_url}`:`/logo.png`}
+                              src={eventImageSrc(event.image_url)}
                               alt={event.title}
                               fluid
                           />

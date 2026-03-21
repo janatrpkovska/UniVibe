@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import EventExpandedCard from "./EventExpandedCard";
+import RightBottomToast from "./RightBottomToast";
 import { useAuth } from "../util/AuthProvider";
+import { eventImageSrc } from "../util/eventImageUrl";
 
 const API_BASE = process.env.REACT_APP_API_URL
   ? `${process.env.REACT_APP_API_URL}/api/event`
@@ -43,6 +45,15 @@ export default function Event() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [saveToast, setSaveToast] = useState({
+    show: false,
+    message: "",
+    variant: "success",
+  });
+
+  const showSaveToast = (message, variant = "success") => {
+    setSaveToast({ show: true, message, variant });
+  };
 
   useEffect(() => {
     if (!id) {
@@ -75,13 +86,23 @@ export default function Event() {
     if (isSaved) {
       axios
         .delete(`${SAVED_API_BASE}/${id}`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(() => setIsSaved(false))
-        .catch(() => {});
+        .then(() => {
+          setIsSaved(false);
+          showSaveToast("Настанот е отстранет од зачувани.");
+        })
+        .catch(() => {
+          showSaveToast("Не можевме да го отстраниме од зачувани. Обидете се повторно.", "error");
+        });
     } else {
       axios
         .post(`${SAVED_API_BASE}/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } })
-        .then(() => setIsSaved(true))
-        .catch(() => {});
+        .then(() => {
+          setIsSaved(true);
+          showSaveToast("Настанот е зачуван.");
+        })
+        .catch(() => {
+          showSaveToast("Не можевме да го зачуваме настанот. Обидете се повторно.", "error");
+        });
     }
   };
 
@@ -101,15 +122,20 @@ export default function Event() {
     );
   }
 
-  const eventImage = event.image_url
-    ? `/event_images/${event.image_url}`
-    : "/logo.png";
+  const eventImage = eventImageSrc(event.image_url);
   const hostName = event.faculty?.name || event.eventType?.name || "UniVibe";
   const hostTitle = event.eventType?.name || event.faculty?.name || "";
   const hostImage = "/fsslogo.png";
 
   return (
     <div style={{ backgroundColor: "#f5f7fa", minHeight: "100vh", padding: "20px 0" }}>
+      <RightBottomToast
+        show={saveToast.show}
+        message={saveToast.message}
+        variant={saveToast.variant}
+        onClose={() => setSaveToast((t) => ({ ...t, show: false }))}
+      />
+
       <EventExpandedCard
         title={event.title}
         date={formatDateRange(event.startDate, event.endDate)}

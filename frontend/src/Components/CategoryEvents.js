@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./CategoryEvents.css";
+import { resolveEventImageUrl } from "../util/eventImageUrl";
 
 const API_BASE = process.env.REACT_APP_API_URL
   ? `${process.env.REACT_APP_API_URL}/api/event`
@@ -303,7 +304,7 @@ export default function CategoryEvents() {
         title: e.title,
         date: formatEventDate(e.startDate),
         eventType: e.eventType?.name ?? "",
-        image: e.image_url ? `/event_images/${e.image_url}` : null,
+        image: e.image_url ? resolveEventImageUrl(e.image_url) : null,
         icon: "✨",
       })),
     [apiEvents]

@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { Form, Button, Container, Alert, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../util/AuthProvider";
@@ -51,8 +51,25 @@ export default function AddEventForm() {
   const navigate = useNavigate();
   const { token, user, isAuthenticated } = useAuth();
   const [faculties, setFaculties] = useState([]);
+  const [dragActive, setDragActive] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [localPreviewUrl, setLocalPreviewUrl] = useState(null);
+  const fileInputRef = useRef(null);
 
   const isAdmin = user && user.role === "ROLE_ADMIN";
+
+  const apiEventBase = process.env.REACT_APP_API_URL
+    ? `${process.env.REACT_APP_API_URL}/api/event`
+    : "http://localhost:9091/api/event";
+
+  const revokeLocalPreview = useCallback(() => {
+    setLocalPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+  }, []);
+
+  useEffect(() => () => revokeLocalPreview(), [revokeLocalPreview]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -85,6 +102,11 @@ export default function AddEventForm() {
     return found?.label || "";
   }, [form.eventTypeId]);
 
+  const hasEventImage = useMemo(
+    () => Boolean(localPreviewUrl || (form.imageUrl && form.imageUrl.trim())),
+    [localPreviewUrl, form.imageUrl]
+  );
+
   const onChange = (e) => {
     setError("");
     setSuccess("");
@@ -96,6 +118,74 @@ export default function AddEventForm() {
       }
       return { ...prev, [name]: value };
     });
+  };
+
+  const ACCEPT_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
+  const uploadImageFile = async (file) => {
+    if (!file || !ACCEPT_IMAGE_TYPES.includes(file.type)) {
+      setError("Дозволени се само JPEG, PNG, WebP и GIF.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Сликата мора да биде најмногу 5MB.");
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    setUploadingImage(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const headers = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const res = await fetch(`${apiEventBase}/upload-image`, {
+        method: "POST",
+        headers,
+        body: fd,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || data.message || "Грешка при upload на слика.");
+      }
+      revokeLocalPreview();
+      setForm((prev) => ({ ...prev, imageUrl: data.imageUrl || "" }));
+    } catch (err) {
+      setError(err?.message || "Грешка при upload на слика.");
+      revokeLocalPreview();
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const onFileChosen = (files) => {
+    const file = files?.[0];
+    if (!file) return;
+    revokeLocalPreview();
+    const url = URL.createObjectURL(file);
+    setLocalPreviewUrl(url);
+    uploadImageFile(file);
+  };
+
+  const onDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
+    if (e.type === "dragleave") setDragActive(false);
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files?.length) onFileChosen(e.dataTransfer.files);
+  };
+
+  const clearEventImage = () => {
+    revokeLocalPreview();
+    setForm((prev) => ({ ...prev, imageUrl: "" }));
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const normalizeType = () => {
@@ -113,7 +203,7 @@ export default function AddEventForm() {
     if (!form.date) return "Одбери датум.";
     if (form.endDate && form.endDate < form.date) return "Крајниот датум не може да биде пред почетниот.";
     if (!form.time) return "Одбери време.";
-    if (!form.location.trim()) return "Внеси локација.";
+    if (form.mode !== "онлајн" && !form.location.trim()) return "Внеси локација.";
     return "";
   };
 
@@ -142,7 +232,10 @@ export default function AddEventForm() {
         date: form.date,
         endDate: form.endDate.trim() || null,
         time: form.time,
-        location: form.location.trim(),
+        location:
+          form.mode === "онлајн"
+            ? form.location.trim() || null
+            : form.location.trim(),
         facultyName: form.faculty.trim() || null,
         categoryName: categoryName,
         eventTypeName: eventType,
@@ -356,23 +449,143 @@ export default function AddEventForm() {
         </Row>
 
         <Form.Group className="mb-3 mt-3">
-          <Form.Label>Локација</Form.Label>
+          <Form.Label>
+            Локација
+            {form.mode === "онлајн" ? (
+              <span className="text-muted fw-normal"> (опционално)</span>
+            ) : null}
+          </Form.Label>
           <Form.Control
             name="location"
             value={form.location}
             onChange={onChange}
-            placeholder="Пр. FINKI / Амфитеатар / Online"
+            placeholder={
+              form.mode === "онлајн"
+                ? "Пр. линк за Zoom / Meet (ако сакаш)"
+                : "Пр. FINKI / Амфитеатар"
+            }
           />
         </Form.Group>
 
         <Form.Group className="mb-4">
-          <Form.Label>Image URL (опционално)</Form.Label>
-          <Form.Control
-            name="imageUrl"
-            value={form.imageUrl}
-            onChange={onChange}
-            placeholder="https://..."
+          <Form.Label className="fw-semibold">Слика на настан (опционално)</Form.Label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="d-none"
+            onChange={(e) => onFileChosen(e.target.files)}
           />
+
+          {!hasEventImage ? (
+            <>
+              <div
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click();
+                }}
+                onDragEnter={onDrag}
+                onDragLeave={onDrag}
+                onDragOver={onDrag}
+                onDrop={onDrop}
+                onClick={() => !uploadingImage && fileInputRef.current?.click()}
+                className="rounded-3 border border-2 border-dashed d-flex flex-column align-items-center justify-content-center text-center px-3 py-5"
+                style={{
+                  minHeight: 168,
+                  cursor: uploadingImage ? "wait" : "pointer",
+                  backgroundColor: dragActive ? "rgba(13, 110, 253, 0.07)" : "#f8f9fa",
+                  borderColor: dragActive ? "#0d6efd" : "#dee2e6",
+                  transition: "border-color 0.15s ease, background-color 0.15s ease",
+                }}
+              >
+                {uploadingImage ? (
+                  <span className="text-secondary">Се качува слика...</span>
+                ) : (
+                  <>
+                    <span className="text-secondary mb-2" style={{ maxWidth: 320 }}>
+                      Повлечи слика овде или кликни за да одбереш од уредот
+                    </span>
+                    <small className="text-muted">
+                      JPEG, PNG, WebP или GIF · најмногу 5MB
+                    </small>
+                  </>
+                )}
+              </div>
+              <div className="mt-3">
+                <Form.Label className="small text-muted mb-1">Или внеси URL на слика</Form.Label>
+                <Form.Control
+                  name="imageUrl"
+                  value={form.imageUrl}
+                  onChange={onChange}
+                  placeholder="https://..."
+                  disabled={uploadingImage}
+                  size="sm"
+                />
+                <Form.Text className="text-muted">Користи го ова ако сликата е веќе онлајн.</Form.Text>
+              </div>
+            </>
+          ) : (
+            <div
+              className="rounded-3 overflow-hidden shadow-sm border"
+              style={{ borderColor: "#e2e8f0" }}
+            >
+              <div
+                className="position-relative d-flex align-items-center justify-content-center px-3 py-4"
+                style={{
+                  minHeight: 200,
+                  background: "linear-gradient(165deg, #f8fafc 0%, #e8eef5 45%, #f1f5f9 100%)",
+                }}
+              >
+                <img
+                  src={localPreviewUrl || form.imageUrl}
+                  alt="Преглед на слика за настан"
+                  className="img-fluid rounded-2"
+                  style={{
+                    maxHeight: 240,
+                    width: "auto",
+                    objectFit: "contain",
+                    boxShadow: "0 8px 24px rgba(15, 23, 42, 0.12)",
+                    opacity: uploadingImage ? 0.55 : 1,
+                  }}
+                />
+                {uploadingImage && (
+                  <div
+                    className="position-absolute top-50 start-50 translate-middle small fw-semibold text-white px-3 py-2 rounded-pill"
+                    style={{ background: "rgba(15, 23, 42, 0.78)" }}
+                  >
+                    Се качува...
+                  </div>
+                )}
+              </div>
+              <div
+                className="d-flex flex-wrap justify-content-center gap-2 px-3 py-3"
+                style={{
+                  background: "#fff",
+                  borderTop: "1px solid #e8eef3",
+                }}
+              >
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  disabled={uploadingImage}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Промени слика
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline-danger"
+                  size="sm"
+                  disabled={uploadingImage}
+                  onClick={clearEventImage}
+                >
+                  Отстрани
+                </Button>
+              </div>
+            </div>
+          )}
         </Form.Group>
 
         <div className="d-flex gap-2">
@@ -384,9 +597,11 @@ export default function AddEventForm() {
             variant="outline-secondary"
             type="button"
             onClick={() => {
+              revokeLocalPreview();
               setForm(initialForm);
               setError("");
               setSuccess("");
+              if (fileInputRef.current) fileInputRef.current.value = "";
             }}
           >
             Reset
