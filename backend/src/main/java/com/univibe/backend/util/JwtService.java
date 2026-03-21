@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import com.univibe.backend.model.User;
+import com.univibe.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,12 @@ import java.util.function.Function;
 
 @Component
 public class JwtService {
+    private final UserService userService;
+
+    public JwtService(UserService userService) {
+        this.userService = userService;
+    }
+
     @Value("${jwt.secret}")
     private String secret;
 
@@ -72,7 +80,11 @@ public class JwtService {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        if (isTokenExpired(token)) return false;
+        final String subject = extractUsername(token);
+        if (subject.equals(userDetails.getUsername())) return true;
+        // Legacy: subject was login name (username); UserDetails#getUsername() is always email
+        User u = userService.findByUsername(subject);
+        return u != null && u.getEmail().equals(userDetails.getUsername());
     }
 }

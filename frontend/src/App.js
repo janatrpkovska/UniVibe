@@ -15,6 +15,7 @@ import ScrollToHash from "./ScrollToHash";
 import "./App.css";
 import { AuthProvider, useAuth } from "./util/AuthProvider";
 import UniVibeAssistant from "./Components/UniVibeAssistant";
+import LoginSuccessToast from "./Components/LoginSuccessToast";
 
 function FloatingAddEventButton() {
   const location = useLocation();
@@ -35,6 +36,7 @@ function AppRoutes() {
   return (
     <>
       <AuthProvider>
+          <LoginSuccessToast />
           <SiteNavbar />
           <FloatingAddEventButton />
           <Routes>

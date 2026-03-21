@@ -1,10 +1,13 @@
+import { useState } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../util/AuthProvider";
+import RightBottomToast from "./RightBottomToast";
 
 function SiteNavbar() {
-  const { isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, logout } = useAuth();
+  const [logoutToast, setLogoutToast] = useState({ show: false, message: "" });
   const navStyle = ({ isActive }) => ({
     backgroundColor: isActive ? "#EBC042" : "transparent",
     color: isActive ? "#ffffff" : "black",
@@ -13,7 +16,18 @@ function SiteNavbar() {
     padding: "6px 30px",
   });
 
+  const handleLogout = () => {
+    logout();
+    setLogoutToast({ show: true, message: "Успешно се одјавивте." });
+  };
+
   return (
+    <>
+    <RightBottomToast
+      show={logoutToast.show}
+      message={logoutToast.message}
+      onClose={() => setLogoutToast((t) => ({ ...t, show: false }))}
+    />
     <Navbar expand="lg" bg="light" className="shadow-sm px-2 py-0">
       
       <Navbar.Brand className="me-auto">
@@ -99,7 +113,7 @@ function SiteNavbar() {
                 fontWeight: "600",
                 marginLeft: "-10vh",
               }}
-              onClick={()=>logout()}
+              onClick={handleLogout}
             >
               Одјави се
             </button>
@@ -107,6 +121,7 @@ function SiteNavbar() {
           
       </Navbar.Collapse>
     </Navbar>
+    </>
   );
 }
 

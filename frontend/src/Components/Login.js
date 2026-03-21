@@ -19,7 +19,7 @@ const Login = () => {
       "password": password
     }).then(res=>{
       login(res.data)
-      navigate("/")
+      navigate("/", { state: { loginToast: "Успешно се најавивте." } })
     }
     ).catch(err=>
       setWrongCredentials(true)

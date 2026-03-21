@@ -30,9 +30,14 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(authRequest.getIdentifier(), authRequest.getPassword())
         );
         if (authentication.isAuthenticated()) {
-            User user = userService.findByEmail(authRequest.getIdentifier());
+            User user = userService.findByUsername(authRequest.getIdentifier());
+            if (user == null) {
+                user = userService.findByEmail(authRequest.getIdentifier());
+            }
             String role = user != null ? user.getRole().name() : "ROLE_USER";
-            String token = jwtService.generateToken(authRequest.getIdentifier(), role);
+            // Subject must match UserDetails#getUsername() (email) or JWT validation fails → 403 on protected routes.
+            String subject = user != null ? user.getEmail() : authRequest.getIdentifier();
+            String token = jwtService.generateToken(subject, role);
             return ResponseEntity.ok(Map.of("token", token));
         } else {
             throw new UsernameNotFoundException("Invalid user request!");
@@ -50,7 +55,8 @@ public class AuthController {
                 user = userService.findByEmail(authRequest.getIdentifier());
             }
             String role = user != null ? user.getRole().name() : "ROLE_USER";
-            String token = jwtService.generateToken(authRequest.getIdentifier(), role);
+            String subject = user != null ? user.getEmail() : authRequest.getIdentifier();
+            String token = jwtService.generateToken(subject, role);
             return ResponseEntity.ok(token);
         } else {
             throw new UsernameNotFoundException("Invalid user request!");
