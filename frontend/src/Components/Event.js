@@ -4,6 +4,7 @@ import axios from "axios";
 import EventExpandedCard from "./EventExpandedCard";
 import RightBottomToast from "./RightBottomToast";
 import { useAuth } from "../util/AuthProvider";
+import { eventImageSrc } from "../util/eventImageUrl";
 
 const API_BASE = process.env.REACT_APP_API_URL
   ? `${process.env.REACT_APP_API_URL}/api/event`
@@ -121,9 +122,7 @@ export default function Event() {
     );
   }
 
-  const eventImage = event.image_url
-    ? `/event_images/${event.image_url}`
-    : "/logo.png";
+  const eventImage = eventImageSrc(event.image_url);
   const hostName = event.faculty?.name || event.eventType?.name || "UniVibe";
   const hostTitle = event.eventType?.name || event.faculty?.name || "";
   const hostImage = "/fsslogo.png";

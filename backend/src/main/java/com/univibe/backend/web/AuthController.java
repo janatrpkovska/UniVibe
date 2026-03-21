@@ -35,7 +35,6 @@ public class AuthController {
                 user = userService.findByEmail(authRequest.getIdentifier());
             }
             String role = user != null ? user.getRole().name() : "ROLE_USER";
-            // Subject must match UserDetails#getUsername() (email) or JWT validation fails → 403 on protected routes.
             String subject = user != null ? user.getEmail() : authRequest.getIdentifier();
             String token = jwtService.generateToken(subject, role);
             return ResponseEntity.ok(Map.of("token", token));

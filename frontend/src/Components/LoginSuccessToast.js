@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import RightBottomToast from "./RightBottomToast";
 
-/**
- * Shows toast after redirect from Login with `navigate(..., { state: { loginToast: "..." } })`.
- */
 export default function LoginSuccessToast() {
   const location = useLocation();
   const navigate = useNavigate();

@@ -1,9 +1,5 @@
 import Toast from "react-bootstrap/Toast";
 
-/**
- * Fixed bottom-right, above UniVibe chat FAB; white bg, black text.
- * @param {"success"|"error"} variant — error: subtle red left border
- */
 export default function RightBottomToast({
   show,
   message,

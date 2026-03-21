@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { Form, Button, Container, Alert, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../util/AuthProvider";
@@ -51,8 +51,25 @@ export default function AddEventForm() {
   const navigate = useNavigate();
   const { token, user, isAuthenticated } = useAuth();
   const [faculties, setFaculties] = useState([]);
+  const [dragActive, setDragActive] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [localPreviewUrl, setLocalPreviewUrl] = useState(null);
+  const fileInputRef = useRef(null);
 
   const isAdmin = user && user.role === "ROLE_ADMIN";
+
+  const apiEventBase = process.env.REACT_APP_API_URL
+    ? `${process.env.REACT_APP_API_URL}/api/event`
+    : "http://localhost:9091/api/event";
+
+  const revokeLocalPreview = useCallback(() => {
+    setLocalPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+  }, []);
+
+  useEffect(() => () => revokeLocalPreview(), [revokeLocalPreview]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -96,6 +113,74 @@ export default function AddEventForm() {
       }
       return { ...prev, [name]: value };
     });
+  };
+
+  const ACCEPT_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
+  const uploadImageFile = async (file) => {
+    if (!file || !ACCEPT_IMAGE_TYPES.includes(file.type)) {
+      setError("Дозволени се само JPEG, PNG, WebP и GIF.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Сликата мора да биде најмногу 5MB.");
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    setUploadingImage(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const headers = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const res = await fetch(`${apiEventBase}/upload-image`, {
+        method: "POST",
+        headers,
+        body: fd,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || data.message || "Грешка при upload на слика.");
+      }
+      revokeLocalPreview();
+      setForm((prev) => ({ ...prev, imageUrl: data.imageUrl || "" }));
+    } catch (err) {
+      setError(err?.message || "Грешка при upload на слика.");
+      revokeLocalPreview();
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const onFileChosen = (files) => {
+    const file = files?.[0];
+    if (!file) return;
+    revokeLocalPreview();
+    const url = URL.createObjectURL(file);
+    setLocalPreviewUrl(url);
+    uploadImageFile(file);
+  };
+
+  const onDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
+    if (e.type === "dragleave") setDragActive(false);
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files?.length) onFileChosen(e.dataTransfer.files);
+  };
+
+  const clearEventImage = () => {
+    revokeLocalPreview();
+    setForm((prev) => ({ ...prev, imageUrl: "" }));
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const normalizeType = () => {
@@ -366,12 +451,87 @@ export default function AddEventForm() {
         </Form.Group>
 
         <Form.Group className="mb-4">
-          <Form.Label>Image URL (опционално)</Form.Label>
+          <Form.Label>Слика на настан (опционално)</Form.Label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="d-none"
+            onChange={(e) => onFileChosen(e.target.files)}
+          />
+          <div
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click();
+            }}
+            onDragEnter={onDrag}
+            onDragLeave={onDrag}
+            onDragOver={onDrag}
+            onDrop={onDrop}
+            onClick={() => !uploadingImage && fileInputRef.current?.click()}
+            className="rounded border border-2 border-dashed d-flex flex-column align-items-center justify-content-center text-center px-3 py-4"
+            style={{
+              minHeight: 160,
+              cursor: uploadingImage ? "wait" : "pointer",
+              backgroundColor: dragActive ? "rgba(13, 110, 253, 0.08)" : "#f8f9fa",
+              borderColor: dragActive ? "#0d6efd" : "#dee2e6",
+            }}
+          >
+            {uploadingImage ? (
+              <span>Се качува слика...</span>
+            ) : (
+              <>
+                <span className="text-secondary mb-1">
+                  Повлечи слика овде или кликни за да одбереш од уредот
+                </span>
+                <small className="text-muted">JPEG, PNG, WebP или GIF · најмногу 5MB</small>
+              </>
+            )}
+          </div>
+          {(localPreviewUrl || form.imageUrl) && (
+            <div className="mt-3 position-relative d-inline-block">
+              <div className="position-relative">
+                <img
+                  src={localPreviewUrl || form.imageUrl}
+                  alt="Преглед"
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: 200,
+                    borderRadius: 8,
+                    objectFit: "contain",
+                    opacity: uploadingImage ? 0.5 : 1,
+                  }}
+                />
+                {uploadingImage && (
+                  <div
+                    className="position-absolute top-50 start-50 translate-middle small fw-semibold text-white px-2 py-1 rounded"
+                    style={{ background: "rgba(0,0,0,0.55)" }}
+                  >
+                    Се качува...
+                  </div>
+                )}
+              </div>
+              {!uploadingImage && (
+                <Button
+                  type="button"
+                  variant="outline-danger"
+                  size="sm"
+                  className="mt-2"
+                  onClick={clearEventImage}
+                >
+                  Отстрани слика
+                </Button>
+              )}
+            </div>
+          )}
+          <Form.Label className="small text-muted mt-3 mb-1">Или внеси URL (опционално)</Form.Label>
           <Form.Control
             name="imageUrl"
             value={form.imageUrl}
             onChange={onChange}
             placeholder="https://..."
+            disabled={uploadingImage}
           />
         </Form.Group>
 
@@ -384,9 +544,11 @@ export default function AddEventForm() {
             variant="outline-secondary"
             type="button"
             onClick={() => {
+              revokeLocalPreview();
               setForm(initialForm);
               setError("");
               setSuccess("");
+              if (fileInputRef.current) fileInputRef.current.value = "";
             }}
           >
             Reset

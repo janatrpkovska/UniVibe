@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../util/AuthProvider";
+import { resolveEventImageUrl } from "../util/eventImageUrl";
 import "./CategoryEvents.css";
 
 const SAVED_API_BASE = process.env.REACT_APP_API_URL
@@ -108,7 +109,7 @@ export default function SavedEvents() {
               <article key={event.id} className="event-card">
                 <div className="event-image">
                   {event.image_url ? (
-                    <img src={`/event_images/${event.image_url}`} alt={event.title} />
+                    <img src={resolveEventImageUrl(event.image_url)} alt={event.title} />
                   ) : (
                     <span>✨</span>
                   )}

@@ -21,7 +21,6 @@ public class SavedEventServiceImpl implements SavedEventService {
     private final UserJpaRepository userRepository;
     private final EventJpaRepository eventRepository;
 
-    /** Principal from JWT / UserDetails is the user's email, not always the username. */
     private User findUserByPrincipal(String principalName) {
         if (principalName == null || principalName.isBlank()) return null;
         return userRepository.findByEmail(principalName)

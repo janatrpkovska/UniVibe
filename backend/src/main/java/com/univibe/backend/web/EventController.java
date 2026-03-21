@@ -3,6 +3,7 @@ package com.univibe.backend.web;
 import com.univibe.backend.dto.CreateEventRequest;
 import com.univibe.backend.dto.EventFilterDTO;
 import com.univibe.backend.dto.EventRequest;
+import com.univibe.backend.dto.ImageUploadResponse;
 import com.univibe.backend.model.Category;
 import com.univibe.backend.model.Event;
 import com.univibe.backend.model.EventType;
@@ -11,11 +12,18 @@ import com.univibe.backend.service.CategoryService;
 import com.univibe.backend.service.EventService;
 import com.univibe.backend.service.EventTypeService;
 import com.univibe.backend.service.FacultyService;
+import com.univibe.backend.service.SupabaseStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +38,7 @@ public class EventController {
     private final CategoryService categoryService;
     private final EventTypeService eventTypeService;
     private final FacultyService facultyService;
+    private final SupabaseStorageService supabaseStorageService;
 
     @GetMapping("/public/get-events")
     public List<Event> getAllEvents() {
@@ -182,5 +191,24 @@ public class EventController {
         filter.setPageSize(size);
 
         return eventService.filteredEvents(filter);
+    }
+
+    /**
+     * Admin-only: uploads an image to Supabase Storage; returns a public URL to store on the event as imageUrl.
+     */
+    @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> uploadEventImage(@RequestParam("file") MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Нема датотека."));
+        }
+        try {
+            String imageUrl = supabaseStorageService.uploadPublicImage(file);
+            return ResponseEntity.ok(new ImageUploadResponse(imageUrl));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of("error", e.getMessage()));
+        }
     }
 }

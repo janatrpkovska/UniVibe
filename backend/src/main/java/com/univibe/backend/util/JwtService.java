@@ -83,7 +83,6 @@ public class JwtService {
         if (isTokenExpired(token)) return false;
         final String subject = extractUsername(token);
         if (subject.equals(userDetails.getUsername())) return true;
-        // Legacy: subject was login name (username); UserDetails#getUsername() is always email
         User u = userService.findByUsername(subject);
         return u != null && u.getEmail().equals(userDetails.getUsername());
     }
