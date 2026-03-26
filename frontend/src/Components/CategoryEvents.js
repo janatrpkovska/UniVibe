@@ -336,10 +336,12 @@ export default function CategoryEvents() {
             Категории
           </Link>
           <span className="sep">›</span>
-          <span className="current">{categoryName}</span>
+          <span className="current">{categoryName ? categoryName : `Категорија ${categoryId}`}</span>
         </div>
 
-        <h1 className="category-title">Категорија: {categoryName}</h1>
+        <h1 className="category-title">
+          Настани во категорија: {categoryName ? categoryName : `#${categoryId}`}
+        </h1>
 
         <button type="button" className="go-search-btn" onClick={goToSearchForm}>
           Пребарај настани

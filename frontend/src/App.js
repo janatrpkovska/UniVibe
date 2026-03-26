@@ -54,6 +54,9 @@ function AppRoutes() {
           <Footer />
           <UniVibeAssistant />
       </AuthProvider>
+
+<UniVibeAssistant />
+
     </>
   );
 }
