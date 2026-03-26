@@ -21,17 +21,31 @@ public class CategoryController {
         return categoryService.getCategoryById(id);
     }
 
-    @GetMapping("/public/get-categories")
-    public List<Category> getCategories() {
+    @GetMapping("/public/get-all")
+    public List<Category> getAllCategories() {
         return categoryService.getAllCategories();
+    }
+
+    @GetMapping("/public/get-by-name")
+    public Category getCategoryByName(@RequestParam String name) {
+        return categoryService.getCategoryByName(name);
     }
 
     @PostMapping("/create-category")
     @PreAuthorize("hasRole('ADMIN')")
     public Category createCategory(@RequestBody Category category) {
-        return categoryService.addCategory(
-                category.getName(),
-                category.getIcon_url()
-        );
+        return categoryService.addCategory(category.getName(), category.getIcon_url());
+    }
+
+    @PostMapping("/update-category")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Category updateCategory(@RequestBody Category category) {
+        return categoryService.updateCategory(category.getId(), category.getName(), category.getIcon_url());
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Category deleteCategory(@PathVariable Long id) {
+        return categoryService.deleteCategory(id);
     }
 }

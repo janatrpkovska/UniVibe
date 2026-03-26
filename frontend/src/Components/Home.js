@@ -1,55 +1,37 @@
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { Container, Image, Button } from "react-bootstrap";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./CategoryEvents.css";
 import "../style/animation.css"
+import axios from "axios";
+import NewsletterPopup from "./NewsletterPopup";
+import { eventImageSrc } from "../util/eventImageUrl";
 
 function EventCard() {
-  const events = [
-    {
-      id: 1,
-      image: "finki.png",
-      title: "Finki event",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-      date: "12.01.2026",
-      location: "Finki",
-    },
-    {
-      id: 2,
-      image: "gf.png",
-      title: "Gradezen fakultet event",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-      date: "12.01.2026",
-      location: "Gradezen",
-    },
-    {
-      id: 3,
-      image: "pmf.png",
-      title: "Pmf event",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-      date: "12.01.2026",
-      location: "Pmf",
-    },
-  ];
+  const [events, setEvents ]= useState([])
+
+  useEffect(
+    ()=>{
+      axios.get("http://localhost:9091/api/event/public/get-latest")
+        .then(res=>{
+          setEvents(res.data)
+          console.log(res.data);
+        }
+        ).catch(err=>console.error(err))
+    },[]
+  )
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "4rem" }}>
-      {events.map((event, index) => (
+      {events.map((event) => (
         <section className="events-grid">
           <article key={event.id} className="event-card">
             <div className="event-image" style={{ objectFit: "cover" }}>
-              {event.image ? (
-                <Image
-                  src={`event_images/${event.image}`}
+              <Image
+                  src={eventImageSrc(event.image_url)}
                   alt={event.title}
                   fluid
                 />
-              ) : (
-                <span>{event.icon}</span>
-              )}
             </div>
 
             <div className="event-body">
@@ -65,8 +47,13 @@ function EventCard() {
               >
                 {event.description}
               </p>
-              <p className="event-date">{event.date}</p>
-              <Link to={`/event/${event.id}`}>
+              <p className="event-date">{event.startDate}</p>
+              <Link to={`/event/${event.id}`}
+                    style={{
+                        display: "flex",
+                        marginTop: "auto",
+                        justifyContent: "center",
+                        textDecoration: "none" }}>
                 <button type="button" className="event-details-btn">
                   Детали
                 </button>
@@ -81,6 +68,11 @@ function EventCard() {
 
 export default function Home() {
   const statsRef = useRef([]);
+  const navigate = useNavigate();
+
+  const goToSearchForm = () => {
+      navigate("/search", { state: { scrollToTop: true } });
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -88,6 +80,8 @@ export default function Home() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("show");
+            const targetNum = entry.target.dataset.target;
+            if (targetNum != null) animateValue(entry.target, 0, Number(targetNum), 1200);
             observer.unobserve(entry.target);
           }
         });
@@ -102,8 +96,24 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
+  function animateValue(el, start, end, duration) {
+    const suffix = el.dataset.suffix || "";
+    const startTime = performance.now();
+    function step(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 2);
+      const current = Math.round(start + (end - start) * easeOut);
+      const span = el.querySelector(".stat-number");
+      if (span) span.textContent = current.toLocaleString("mk-MK") + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
   return (
     <>
+        <NewsletterPopup />
       <div style={{ position: "relative", textAlign: "center" }}>
         <Image
           src="background.png"
@@ -249,8 +259,7 @@ export default function Home() {
         <EventCard />
         <Button
           type="button"
-          as={Link}
-          to="/search"
+          onClick={goToSearchForm}
           style={{
             backgroundColor: "#ffcc33",
             color: "black",
@@ -267,7 +276,7 @@ export default function Home() {
       </Container>
       <section
         style={{
-          background: "#c7e3ffff",
+          background: "#D3D3D3",
           padding: "60px 20px",
           display: "flex",
           justifyContent: "center",
@@ -278,14 +287,16 @@ export default function Home() {
         }}
       >
         {[
-          { number: "12+", text: "Факултети" },
-          { number: "200+", text: "Организирани настани" },
-          { number: "1,100+", text: "Студенти" },
+          { number: "12+", text: "Факултети", target: 12, suffix: "+" },
+          { number: "200+", text: "Организирани настани", target: 200, suffix: "+" },
+          { number: "1,100+", text: "Студенти", target: 1100, suffix: "+" },
         ].map((item, index) => (
           <div
             key={index}
             ref={(el) => (statsRef.current[index] = el)}
             className="fade-in-up"
+            data-target={item.target}
+            data-suffix={item.suffix}
             style={{
               background: "#f9f9f9",
               padding: "30px 40px",
@@ -295,12 +306,43 @@ export default function Home() {
             }}
           >
             <h2 style={{ fontSize: "48px", color: "#EBC042", margin: 0 }}>
-              {item.number}
+              <span className="stat-number">0{item.suffix}</span>
             </h2>
             <p style={{ fontSize: "18px", marginTop: "10px" }}>{item.text}</p>
           </div>
         ))}
       </section>
+        <section style={{
+            background: "#c7e3ffff",
+            color: "black",
+            padding: "60px 20px",
+            textAlign: "center",
+        }}>
+            <Container>
+                <h2 style={{ fontSize: "42px", fontWeight: "900", marginBottom: "20px" }}>
+                    Сакаш да додадеш настан?
+                </h2>
+                <p style={{ fontSize: "20px", maxWidth: "800px", margin: "0 auto 30px" }}>
+                    Ако организирате универзитетски настан и сакате да го објавите на UniVibe,<br />
+                    контактирајте нè и ние ќе го додадеме за Вас!
+                </p>
+                <Button
+                    variant="dark"
+                    size="lg"
+                    href="mailto:univibe2025@yahoo.com"
+                    style={{
+                        backgroundColor: "#ffcc33",
+                        border: "none",
+                        color: "black",
+                        borderRadius: "10px",
+                        padding: "12px 40px",
+                        fontSize: "18px",
+                    }}
+                >
+                    Пријави настан
+                </Button>
+            </Container>
+        </section>
     </>
   );
 }

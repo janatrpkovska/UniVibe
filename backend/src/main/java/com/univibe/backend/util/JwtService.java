@@ -5,7 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
+import com.univibe.backend.model.User;
+import com.univibe.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -18,11 +19,23 @@ import java.util.function.Function;
 
 @Component
 public class JwtService {
+    private final UserService userService;
+
+    public JwtService(UserService userService) {
+        this.userService = userService;
+    }
+
     @Value("${jwt.secret}")
     private String secret;
 
     public String generateToken(String username) {
         Map<String,Object> claims = new HashMap<>();
+        return createToken(claims, username);
+    }
+
+    public String generateToken(String username, String role) {
+        Map<String,Object> claims = new HashMap<>();
+        claims.put("role", role);
         return createToken(claims, username);
     }
 
@@ -67,7 +80,10 @@ public class JwtService {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        if (isTokenExpired(token)) return false;
+        final String subject = extractUsername(token);
+        if (subject.equals(userDetails.getUsername())) return true;
+        User u = userService.findByUsername(subject);
+        return u != null && u.getEmail().equals(userDetails.getUsername());
     }
 }

@@ -1,23 +1,32 @@
 package com.univibe.backend.web;
 
+import com.univibe.backend.dto.CreateEventRequest;
 import com.univibe.backend.dto.EventFilterDTO;
 import com.univibe.backend.dto.EventRequest;
+import com.univibe.backend.dto.ImageUploadResponse;
 import com.univibe.backend.model.Category;
 import com.univibe.backend.model.Event;
 import com.univibe.backend.model.EventType;
+import com.univibe.backend.model.Faculty;
 import com.univibe.backend.service.CategoryService;
 import com.univibe.backend.service.EventService;
 import com.univibe.backend.service.EventTypeService;
 import com.univibe.backend.service.FacultyService;
+import com.univibe.backend.service.SupabaseStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,11 +38,16 @@ public class EventController {
     private final CategoryService categoryService;
     private final EventTypeService eventTypeService;
     private final FacultyService facultyService;
+    private final SupabaseStorageService supabaseStorageService;
 
     @GetMapping("/public/get-events")
     public List<Event> getAllEvents() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return eventService.findAll();
+    }
+
+    @GetMapping("/public/get-latest")
+    public List<Event> getLatestEvents() {
+        return eventService.getLatestEvents();
     }
 
     @GetMapping("/public/get-event/{id}")
@@ -75,6 +89,45 @@ public class EventController {
                 eventRequest.getCategory(),
                 eventRequest.getEventType(),
                 eventRequest.getFaculty()
+        );
+    }
+
+    @PostMapping("/events")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Event createEventSimple(@RequestBody CreateEventRequest request) {
+        LocalDateTime startDate = LocalDateTime.parse(request.getDate() + "T" + request.getTime() + ":00");
+        LocalDate endDate = (request.getEndDate() != null && !request.getEndDate().trim().isEmpty())
+                ? LocalDate.parse(request.getEndDate())
+                : LocalDate.parse(request.getDate());
+
+        Category category = categoryService.getCategoryByName(request.getCategoryName());
+        if (category == null) {
+            category = categoryService.addCategory(request.getCategoryName(), "");
+        }
+
+        EventType eventType = eventTypeService.findEventTypeByName(request.getEventTypeName());
+        if (eventType == null) {
+            eventType = eventTypeService.createEventType(request.getEventTypeName());
+        }
+
+        Faculty faculty = null;
+        if (request.getFacultyName() != null && !request.getFacultyName().trim().isEmpty()) {
+            faculty = facultyService.findByName(request.getFacultyName());
+            if (faculty == null) {
+                faculty = facultyService.createFaculty(request.getFacultyName());
+            }
+        }
+
+        return this.eventService.createEvent(
+                request.getTitle(),
+                request.getDescription(),
+                startDate,
+                endDate,
+                request.getLocation(),
+                request.getImageUrl(),
+                category,
+                eventType,
+                faculty
         );
     }
 
@@ -143,5 +196,21 @@ public class EventController {
         filter.setPageSize(size);
 
         return eventService.filteredEvents(filter);
+    }
+
+    @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> uploadEventImage(@RequestParam("file") MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Нема датотека."));
+        }
+        try {
+            String imageUrl = supabaseStorageService.uploadPublicImage(file);
+            return ResponseEntity.ok(new ImageUploadResponse(imageUrl));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of("error", e.getMessage()));
+        }
     }
 }

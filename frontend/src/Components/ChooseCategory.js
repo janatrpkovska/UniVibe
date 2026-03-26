@@ -16,7 +16,7 @@ export default function ChooseCategory() {
         setError("");
 
         const res = await axios.get(
-          "http://localhost:9091/api/category/public/get-categories"
+          "http://localhost:9091/api/category/public/get-all"
         );
 
         setCategories(res.data || []);
@@ -31,6 +31,18 @@ export default function ChooseCategory() {
     fetchCategories();
   }, []);
 
+  if (loading) {
+    return <p style={{ padding: "40px" }}>Се вчитува...</p>;
+  }
+
+  if (error) {
+    return (
+      <p style={{ padding: "40px", color: "red" }}>
+        {error}
+      </p>
+    );
+  }
+
   return (
     <div
       className="categories-page"
@@ -44,9 +56,6 @@ export default function ChooseCategory() {
             ИЗБЕРИ КАТЕГОРИЈА
           </h2>
 
-          {loading && <p>Се вчитува...</p>}
-          {error && <p style={{ color: "red" }}>{error}</p>}
-
           <div className="categories-grid">
             {categories.map((cat) => (
               <Link
@@ -58,6 +67,9 @@ export default function ChooseCategory() {
                   src={cat.icon_url}
                   className="cat-icon"
                   alt={cat.name}
+                  onError={(e) => {
+                    e.target.src = "/logo.png";
+                  }}
                 />
                 <p>{cat.name}</p>
               </Link>

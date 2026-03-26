@@ -11,4 +11,7 @@ import java.util.List;
 @Repository
 public interface EventJpaRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     List<Event> findAllByCategory(Category category);
+    List<Event> findAllByOrderByStartDateDesc();
+
+    boolean existsByTitle(String title);
 }

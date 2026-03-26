@@ -1,12 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  useLocation,
-  Navigate,
-} from "react-router-dom";
-
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import Home from "./Components/Home";
 import About from "./Components/AboutUs";
 import ChooseCategory from "./Components/ChooseCategory";
@@ -15,38 +7,23 @@ import Search from "./Components/Search";
 import SiteNavbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import AddEventForm from "./Components/AddEventForm";
+import Event from "./Components/Event";
 import Login from "./Components/Login";
 import Register from "./Components/Register";
+import SavedEvents from "./Components/SavedEvents";
 import ScrollToHash from "./ScrollToHash";
-import Event from "./Components/Event";
-
 import "./App.css";
 import { AuthProvider, useAuth } from "./util/AuthProvider";
 import UniVibeAssistant from "./Components/UniVibeAssistant";
-
-
-
-
-function ProtectedRoute({ children }) {
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-}
-
+import LoginSuccessToast from "./Components/LoginSuccessToast";
 
 function FloatingAddEventButton() {
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
-
- 
-  if (!isAuthenticated) return null;
-
+  const { user, isAuthenticated } = useAuth();
+  const isAdmin = user && user.role === "ROLE_ADMIN";
 
   if (location.pathname === "/events/new") return null;
+  if (!isAuthenticated || !isAdmin) return null;
 
   return (
     <Link to="/events/new" className="fab-add-event" aria-label="Додај настан">
@@ -59,32 +36,23 @@ function AppRoutes() {
   return (
     <>
       <AuthProvider>
-        <SiteNavbar />
-        <FloatingAddEventButton />
-
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about-us" element={<About />} />
-          <Route path="/choose-category" element={<ChooseCategory />} />
-          <Route path="/categories/:categoryId" element={<CategoryEvents />} />
-          <Route path="/search" element={<Search />} />
-
-      
-          <Route
-            path="/events/new"
-            element={
-              <ProtectedRoute>
-                <AddEventForm />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/event/:id" element={<Event />} />
-        </Routes>
-
-        <Footer />
+          <LoginSuccessToast />
+          <SiteNavbar />
+          <FloatingAddEventButton />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about-us" element={<About />} />
+            <Route path="/choose-category" element={<ChooseCategory />} />
+            <Route path="/categories/:categoryId" element={<CategoryEvents />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/events/new" element={<AddEventForm />} />
+            <Route path="/event/:id" element={<Event />} />
+            <Route path="/saved-events" element={<SavedEvents />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+          <Footer />
+          <UniVibeAssistant />
       </AuthProvider>
 
 <UniVibeAssistant />

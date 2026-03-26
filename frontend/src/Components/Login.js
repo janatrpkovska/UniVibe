@@ -9,20 +9,21 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const { login } = useAuth()
   const navigate = useNavigate()
-
+  const [ wrongCredentials, setWrongCredentials ] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ username, password });
 
-    await axios.post("http://localhost:9091/api/auth/login", {
-      "username": username,
+    await axios.post("http://localhost:9091/api/auth/form-login", {
+      "identifier": username,
       "password": password
     }).then(res=>{
       login(res.data)
-      navigate("/")
+      navigate("/", { state: { loginToast: "Успешно се најавивте." } })
     }
-    ).catch(err=>console.error(err))
+    ).catch(err=>
+      setWrongCredentials(true)
+    )
   };
 
   return (
@@ -44,13 +45,12 @@ const Login = () => {
 
           <h2>Најави се</h2>
           <p className="subtitle"></p>
-
           <form onSubmit={handleSubmit}>
             <input
               type="text"
-              placeholder="Внесете корисничко име"
+              placeholder="Внесете корисничко име или е-пошта"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => {setUsername(e.target.value); setWrongCredentials(false)}}
               required
             />
 
@@ -58,9 +58,13 @@ const Login = () => {
               type="password"
               placeholder="Лозинка"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {setPassword(e.target.value); setWrongCredentials(false)}}
               required
             />
+            {
+              wrongCredentials &&
+              <div style={{color: 'red'}}>Погрешни податоци!</div>
+            } 
 
             <button type="submit">Најави се</button>
           </form>

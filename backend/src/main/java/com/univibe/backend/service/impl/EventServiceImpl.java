@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import com.univibe.backend.service.NewsletterService;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,9 +20,12 @@ import java.util.List;
 @Service
 public class EventServiceImpl implements EventService {
     private final EventJpaRepository eventJpaRepository;
+    private final NewsletterService newsletterService;
 
-    public EventServiceImpl(EventJpaRepository eventJpaRepository) {
+    public EventServiceImpl(EventJpaRepository eventJpaRepository,
+                            NewsletterService newsletterService) {
         this.eventJpaRepository = eventJpaRepository;
+        this.newsletterService = newsletterService;
     }
 
     @Override
@@ -37,7 +42,12 @@ public class EventServiceImpl implements EventService {
                 faculty
         );
 
-        return eventJpaRepository.save(event);
+        event.setSource(EventSource.MANUAL);
+
+        Event savedEvent = eventJpaRepository.save(event);
+        newsletterService.sendNewEventEmail(savedEvent.getTitle(), savedEvent.getDescription());
+
+        return savedEvent;
     }
 
     @Override
@@ -55,6 +65,7 @@ public class EventServiceImpl implements EventService {
         event.setCategory(category);
         event.setStatus(status);
         event.setSource(source);
+
         return eventJpaRepository.save(event);
     }
 
@@ -67,6 +78,7 @@ public class EventServiceImpl implements EventService {
     public Event deleteEvent(Long id) {
         Event toDelete = this.findById(id);
         eventJpaRepository.delete(toDelete);
+
         return toDelete;
     }
 
@@ -94,21 +106,27 @@ public class EventServiceImpl implements EventService {
         if (filter.getCategory() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("category"), filter.getCategory()));
         }
+
         if (filter.getEventType() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("eventType"), filter.getEventType()));
         }
+
         if (filter.getFaculty() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("faculty"), filter.getFaculty()));
         }
+
         if (filter.getStatus() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), filter.getStatus()));
         }
+
         if (filter.getMode() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("mode"), filter.getMode()));
         }
+
         if (filter.getLocation() != null && !filter.getLocation().isEmpty()) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("location"), filter.getLocation()));
         }
+
         if (filter.getStartDate() != null) {
             LocalDate selectedDate = filter.getStartDate();
             spec = spec.and((root, query, cb) -> cb.or(
@@ -127,5 +145,35 @@ public class EventServiceImpl implements EventService {
         Pageable pageable = PageRequest.of(filter.getPageNumber(), filter.getPageSize(), Sort.by("startDate").descending());
 
         return eventJpaRepository.findAll(spec, pageable);
+    }
+
+    @Override
+    public List<Event> getLatestEvents() {
+        return eventJpaRepository.findAllByOrderByStartDateDesc().subList(0,3);
+    }
+
+    @Override
+    public boolean existsByTitle(String title) {
+        return eventJpaRepository.existsByTitle(title);
+    }
+
+    @Override
+    public Event createScrapedEvent(String title, String description, LocalDateTime startDate, LocalDate endDate, String location, String image_url, Category category, EventType eventType, Faculty faculty, EventMode mode) {
+        Event event = new Event(
+                title,
+                description,
+                startDate,
+                endDate,
+                location,
+                image_url,
+                category,
+                eventType,
+                faculty
+        );
+
+        event.setSource(EventSource.SCRAPED);
+        event.setMode(mode);
+
+        return eventJpaRepository.save(event);
     }
 }

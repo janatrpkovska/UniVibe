@@ -19,6 +19,11 @@ public class EventTypeServiceImpl implements EventTypeService {
     }
 
     @Override
+    public EventType findEventTypeByName(String name) {
+        return eventTypeJpaRepository.findByName(name);
+    }
+
+    @Override
     public EventType createEventType(String name) {
         EventType eventType = new EventType();
         eventType.setName(name);

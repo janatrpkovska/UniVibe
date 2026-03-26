@@ -15,4 +15,6 @@ public class UserDTO {
     private String email;
     private Role role;
     private String username;
+    private String city;
+    private String telephone;
 }

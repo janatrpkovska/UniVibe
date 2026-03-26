@@ -1,6 +1,8 @@
 package com.univibe.backend.web;
 
 import com.univibe.backend.dto.AuthRequest;
+import com.univibe.backend.model.User;
+import com.univibe.backend.service.UserService;
 import com.univibe.backend.util.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,14 +22,40 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequest authRequest){
+    public ResponseEntity<Map<String, String>> login(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(authRequest.getIdentifier(), authRequest.getPassword())
         );
         if (authentication.isAuthenticated()) {
-            String token = jwtService.generateToken(authRequest.getUsername());
+            User user = userService.findByUsername(authRequest.getIdentifier());
+            if (user == null) {
+                user = userService.findByEmail(authRequest.getIdentifier());
+            }
+            String role = user != null ? user.getRole().name() : "ROLE_USER";
+            String subject = user != null ? user.getEmail() : authRequest.getIdentifier();
+            String token = jwtService.generateToken(subject, role);
+            return ResponseEntity.ok(Map.of("token", token));
+        } else {
+            throw new UsernameNotFoundException("Invalid user request!");
+        }
+    }
+
+    @PostMapping("/form-login")
+    public ResponseEntity<String> loginFromForm(@RequestBody AuthRequest authRequest){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.getIdentifier(), authRequest.getPassword())
+        );
+        if (authentication.isAuthenticated()) {
+            User user = userService.findByUsername(authRequest.getIdentifier());
+            if (user == null) {
+                user = userService.findByEmail(authRequest.getIdentifier());
+            }
+            String role = user != null ? user.getRole().name() : "ROLE_USER";
+            String subject = user != null ? user.getEmail() : authRequest.getIdentifier();
+            String token = jwtService.generateToken(subject, role);
             return ResponseEntity.ok(token);
         } else {
             throw new UsernameNotFoundException("Invalid user request!");
