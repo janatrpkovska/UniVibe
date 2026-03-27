@@ -1,11 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./UniVibeAssistant.css";
+import { useAuth } from "../util/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 function Icon({ name, alt }) {
   return <img src={`/icons/${name}`} alt={alt || name} className="uv-inline-icon" />;
 }
 
 export default function UniVibeAssistant() {
+    const { login, logout } = useAuth();
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const messagesEndRef = useRef(null);
     const [loginStep, setLoginStep] = useState(null);
@@ -14,6 +18,88 @@ export default function UniVibeAssistant() {
     const [newsletterShown, setNewsletterShown] = useState(false);
     const [aiMessageCount, setAiMessageCount] = useState(0);
     const [aiEnabled, setAiEnabled] = useState(false);
+
+    const fetchEventsByCategory = async (categoryName) => {
+  try {
+    const res = await fetch(
+      `http://localhost:9091/api/event/public/get-events/category?category=${encodeURIComponent(categoryName)}`
+    );
+    return await res.json();
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+};
+
+const sendCategoryEvents = async (categoryName, trimmed) => {
+  setMessages(prev => [
+    ...prev,
+    { from: "user", text: trimmed, time: new Date() }
+  ]);
+
+  const events = await fetchEventsByCategory(categoryName);
+  const uniqueEvents = events.filter(
+  (e, index, self) =>
+    index === self.findIndex(ev => ev.id === e.id)
+);
+
+  if (!uniqueEvents.length) {
+    setMessages(prev => [
+      ...prev,
+      {
+        from: "bot",
+        text: `Моментално нема настани за ${categoryName} 😕`,
+        action: "EVENT_CATEGORIES",
+        time: new Date()
+      }
+    ]);
+    return;
+  }
+
+  setMessages(prev => [
+    ...prev,
+    {
+      from: "bot",
+      component: (
+  <div>
+    <b>Настани за {categoryName} 👇</b>
+    <ul style={{ paddingLeft: "16px" }}>
+      {uniqueEvents.slice(0, 5).map(e => (
+       <li key={e.id} style={{ marginBottom: "6px" }}>
+  <div
+    onClick={() => navigate(`/event/${e.id}`)}
+    style={{
+      color: "#4d89e9",
+      cursor: "pointer",
+      fontWeight: "600"
+    }}
+  >
+    <div>{e.title}</div>
+
+    {e.start_date && (
+      <small style={{ opacity: 0.7, display: "block", marginTop: "2px" }}>
+        {new Date(e.start_date).toLocaleString("mk-MK", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        })}
+      </small>
+    )}
+  </div>
+</li>
+      ))}
+    </ul>
+
+    <div style={{ fontSize: "12px", marginTop: "8px" }}>
+      (Кликни на настан за повеќе детали)
+    </div>
+  </div>
+)
+    }
+  ]);
+};
 
     const initialMessage = useMemo(() => ({
         from: "bot",
@@ -109,30 +195,103 @@ if (lower.includes("help") || lower.includes("помош") || lower.includes("ш
 
 if (!aiEnabled) {
 
-  if (lower.includes("najava") || lower.includes("најава") || lower.includes("login")) {
-    setLoginStep("EMAIL");
+if (lower.includes("наука") || lower.includes("истраж")) {
+  await sendCategoryEvents("Наука / Истражување", trimmed);
+  setInput("");
+  return;
+}
+
+if (lower.includes("кариера") || lower.includes("career")) {
+  await sendCategoryEvents("Кариера", trimmed);
+  setInput("");
+  return;
+}
+
+if (lower.includes("едукација") || lower.includes("курс")) {
+  await sendCategoryEvents("Едукација", trimmed);
+  setInput("");
+  return;
+}
+
+if (lower.includes("спорт")) {
+  await sendCategoryEvents("Спорт", trimmed);
+  setInput("");
+  return;
+}
+
+if (lower.includes("технолог") || lower.includes("tech")) {
+  await sendCategoryEvents("Технологија", trimmed);
+  setInput("");
+  return;
+}
+
+  if (
+    lower.includes("настани") ||
+    lower.includes("nastani") ||
+    lower.includes("events")
+  ) {
     setMessages(prev => [
       ...prev,
       { from: "user", text: trimmed, time: new Date() },
-      { from: "bot", text: "Внеси email 📧", time: new Date() }
+      {
+        from: "bot",
+        text: "Еве неколку категории на настани 👇",
+        action: "EVENT_CATEGORIES",
+        time: new Date()
+      }
     ]);
+
     setInput("");
     return;
   }
 
- if (lower.includes("registracija") || lower.includes("регистрација") || lower.includes("register")) {
+
+if (lower.includes("najava") || lower.includes("најава") || lower.includes("login")) {
+  setLoginStep("EMAIL");
+  setMessages(prev => [
+    ...prev,
+    { from: "user", text: trimmed, time: new Date() },
+    { from: "bot", text: "Внеси email/корисничко име 📧", time: new Date() }
+  ]);
+  setInput("");
+  return;
+}
+
+if (
+  lower.includes("одјава") ||
+  lower.includes("logout") ||
+  lower.includes("излези")
+) {
+  logout();
 
   setMessages(prev => [
     ...prev,
     { from: "user", text: trimmed, time: new Date() },
+    {
+      from: "bot",
+      text: "Се одјави успешно 👋",
+      time: new Date()
+    }
+  ]);
 
+  setTimeout(() => {
+    navigate("/");
+  }, 1000);
+
+  setInput("");
+  return;
+}
+
+if (lower.includes("registracija") || lower.includes("регистрација") || lower.includes("register")) {
+  setMessages(prev => [
+    ...prev,
+    { from: "user", text: trimmed, time: new Date() },
     {
       from: "bot",
       text: "✨ Можеш да се регистрираш на два начина:\n\n1️⃣ Преку формата на страницата",
       action: "REGISTER_FORM_OPTION",
       time: new Date()
     },
-
     {
       from: "bot",
       text: "2️⃣ Тука во чатот\nЗа да започнеме со регистрација, напиши го твоето име 👇",
@@ -351,128 +510,133 @@ const sendEmail = async () => {
 };
 
 const handleLogin = async (email, password) => {
-    try {
-       let identifier = email;
+  try {
+    let identifier = email;
 
-let response = await fetch("http://localhost:9091/api/auth/form-login", {
-    method: "POST",
-    headers: {
+    let response = await fetch("http://localhost:9091/api/auth/form-login", {
+      method: "POST",
+      headers: {
         "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ identifier, password })
-});
-
-
-// ако login со email не успее, пробај со username
-if (!response.ok && email.includes("@")) {
-
-    const username = email.split("@")[0];
-
-    response = await fetch("http://localhost:9091/api/auth/form-login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ identifier: username, password })
+      },
+      body: JSON.stringify({ identifier, password })
     });
 
-}
-        if (!response.ok) {
-            setMessages(prev => [
-                ...prev,
-                {
-                    from: "bot",
-                    text: "Погрешен email или лозинка ❌",
-                    action: "LOGIN_FAILED",
-                    time: new Date()
-                }
-            ]);
-            setLoginStep(null);
-            return;
-        }
+    if (!response.ok && email.includes("@")) {
+      const username = email.split("@")[0];
 
-        const token = await response.text();
-
-        if (!token) {
-            setMessages(prev => [
-                ...prev,
-                {
-                    from: "bot",
-                    text: "Настана проблем со токенот.",
-                    time: new Date()
-                }
-            ]);
-            return;
-        }
-
-        localStorage.setItem("token", token);
-
-        setMessages(prev => [
-            ...prev,
-            {
-                from: "bot",
-                text: "Успешно се најави 🎉",
-                time: new Date()
-            }
-        ]);
-
-        setTimeout(() => {
-            window.location.href = "/";
-        }, 1000);
-
-    } catch (error) {
-        setMessages(prev => [
-            ...prev,
-            {
-                from: "bot",
-                text: "Настана грешка при најавување.",
-                time: new Date()
-            }
-        ]);
+      response = await fetch("http://localhost:9091/api/auth/form-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ identifier: username, password })
+      });
     }
+
+    if (!response.ok) {
+      setMessages(prev => [
+        ...prev,
+        {
+          from: "bot",
+          text: "Погрешен email или лозинка ❌",
+          action: "LOGIN_FAILED",
+          time: new Date()
+        }
+      ]);
+      setLoginStep(null);
+      return;
+    }
+
+    const token = await response.text();
+    console.log("TOKEN:", token);
+
+    if (!token) {
+      setMessages(prev => [
+        ...prev,
+        {
+          from: "bot",
+          text: "Настана проблем со најавата.",
+          time: new Date()
+        }
+      ]);
+      return;
+    }
+
+    login(token);
+
+    setMessages(prev => [
+      ...prev,
+      {
+        from: "bot",
+        text: "Успешно се најави 🎉",
+        time: new Date()
+      }
+    ]);
+
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
+
+  } catch (error) {
+    setMessages(prev => [
+      ...prev,
+      {
+        from: "bot",
+        text: "Настана грешка при најавување.",
+        time: new Date()
+      }
+    ]);
+  }
 };
 
-const handleRegister = async (data) => {
-    try {
-        const response = await fetch("http://localhost:9091/api/user/public/create-user", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username: data.email.split("@")[0],
-                password: data.password,
-                email: data.email,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                telephone: data.telephone,
-                city: data.city
-            })
-        });
+const handleRegister = async (userData) => {
+  try {
+    const username = userData.email.split("@")[0];
 
-        if (!response.ok) {
-            setMessages(prev => [
-                ...prev,
-                { from: "bot", text: "Регистрацијата не успеа ❌", time: new Date() }
-            ]);
-            return;
+    const payload = {
+      ...userData,
+      username
+    };
+
+    const res = await fetch("http://localhost:9091/api/user/public/create-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      setMessages(prev => [
+        ...prev,
+        {
+          from: "bot",
+          text: "Грешка при регистрација ❌",
+          time: new Date()
         }
-
-        setMessages(prev => [
-            ...prev,
-            { 
-                from: "bot", 
-                text: "Успешно се регистрира 🎉\n\nЗа да се најавиш, напиши „најава“.", 
-                time: new Date() 
-            }
-        ]);
-
-    } catch (error) {
-        setMessages(prev => [
-            ...prev,
-            { from: "bot", text: "Настана грешка при регистрација ❌", time: new Date() }
-        ]);
+      ]);
+      return;
     }
+
+    setMessages(prev => [
+      ...prev,
+      {
+        from: "bot",
+        text: "Успешна регистрација 🎉",
+        time: new Date()
+      }
+    ]);
+
+  } catch (err) {
+    setMessages(prev => [
+      ...prev,
+      {
+        from: "bot",
+        text: "Настана грешка при регистрација.",
+        time: new Date()
+      }
+    ]);
+  }
 };
 
     const closeChat = () => setOpen(false);
@@ -507,7 +671,21 @@ const handleRegister = async (data) => {
                                 <input 
                                     type="checkbox" 
                                     checked={aiEnabled}
-                                    onChange={() => setAiEnabled(!aiEnabled)}
+                                    onChange={() => {
+                            const newValue = !aiEnabled;
+                            setAiEnabled(newValue);
+
+                            setMessages(prev => [
+                                ...prev,
+                                {
+                                from: "bot",
+                                text: newValue
+                                    ? "AI режимот е вклучен 🤖"
+                                    : "AI режимот е исклучен 🙂",
+                                time: new Date()
+                                }
+                            ]);
+                            }}
                                 />
                                 <span className="uv-slider"></span>
                             </label>
@@ -531,7 +709,7 @@ const handleRegister = async (data) => {
                         ${m.from === "user" ? "uv-user" : "uv-bot"} 
                         ${m.success ? "uv-success-bubble" : ""}`}>
                                         <>
-                                {m.text}
+                                {m.component ? m.component : m.text}
                                 {idx === 0 && (
   <div className="uv-quick-actions">
     <button
@@ -543,6 +721,11 @@ const handleRegister = async (data) => {
     >
       📅 Настани
     </button>
+
+    <button className="uv-action-btn" onClick={() => {
+  setInput("настани");
+  sendMessage();
+}}></button>
 
     <button
       className="uv-action-btn"
@@ -656,6 +839,75 @@ const handleRegister = async (data) => {
                                         </button>
                                     </div>
                                 )}
+
+                               {m.action === "EVENT_CATEGORIES" && (
+                                    <div className="uv-action-wrapper">
+
+                                        <button
+                                        className="uv-action-btn"
+                                        onClick={() => sendCategoryEvents("Технологија", "технологија")}
+                                        >
+                                        💻 Технологија
+                                        </button>
+
+                                        <button
+                                        className="uv-action-btn"
+                                        onClick={() => sendCategoryEvents("Кариера", "кариера")}
+                                        >
+                                        💼 Кариера
+                                        </button>
+
+                                        <button
+                                        className="uv-action-btn"
+                                        onClick={() => sendCategoryEvents("Наука / Истражување", "наука")}
+                                        >
+                                        🔬 Наука
+                                        </button>
+
+                                        <button
+                                        className="uv-action-btn"
+                                        onClick={() => sendCategoryEvents("Спорт", "спорт")}
+                                        >
+                                        ⚽ Спорт
+                                        </button>
+
+                                        <button
+                                        className="uv-action-btn"
+                                        onClick={() => sendCategoryEvents("Едукација", "едукација")}
+                                        >
+                                        🎓 Едукација
+                                        </button>
+
+                                        <button
+                                        className="uv-action-btn"
+                                        onClick={() => sendCategoryEvents("Култура", "култура")}
+                                        >
+                                        🎭 Култура
+                                        </button>
+
+                                        <button
+                                        className="uv-action-btn"
+                                        onClick={() => sendCategoryEvents("Здравје", "здравје")}
+                                        >
+                                        🏥 Здравје
+                                        </button>
+
+                                        <button
+                                        className="uv-action-btn"
+                                        onClick={() => sendCategoryEvents("Работилници", "работилници")}
+                                        >
+                                        🛠 Работилници
+                                        </button>
+
+                                        <button
+                                        className="uv-action-btn"
+                                        onClick={() => navigate("/search")}
+                                        >
+                                        🔍 Види сите
+                                        </button>
+
+                                    </div>
+                                    )}
 
 
                             </>

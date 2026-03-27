@@ -18,114 +18,6 @@ function formatEventDate(dateStr) {
   return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-const categoriesConfig = {
-  tech: {
-    name: "Технологија",
-    events: [
-      {
-        id: 101,
-        title: "AI Bootcamp: Практична примена на ChatGPT",
-        date: "18 декември 2025",
-        time: "18:00 – 20:00",
-        location: "ФИНКИ, амфитеатар",
-        mode: "во живо",
-        icon: "🤖",
-        eventType: "Работилница / Workshop",
-        description:
-          "Интерактивна работилница каде студентите учат како да користат AI алатки во секојдневни проекти и учење.",
-      },
-      {
-        id: 102,
-        title: "Cyber Security Essentials",
-        date: "20 декември 2025",
-        time: "17:00 – 19:00",
-        location: "Online (Zoom)",
-        mode: "онлајн",
-        icon: "🛡️",
-        eventType: "Предавање / Lecture",
-        description:
-          "Основи на сајбер безбедност за студенти: лозинки, фишинг, 2FA и безбедно користење на интернет.",
-      },
-    ],
-  },
-  career: {
-    name: "Кариeра",
-    events: [
-      {
-        id: 201,
-        title: "CV & Portfolio Masterclass",
-        date: "12 декември 2025",
-        time: "16:00 – 18:00",
-        location: "Кариерен центар, УКИМ",
-        mode: "во живо",
-        icon: "📝",
-        eventType: "Предавање / Lecture",
-        description:
-          "Практична сесија за креирање силно CV и портфолио за ИТ и креативни индустрии.",
-      },
-      {
-        id: 202,
-        title: "Како до прва пракса?",
-        date: "18 декември 2025",
-        time: "19:00 – 20:30",
-        location: "Online (Microsoft Teams)",
-        mode: "онлајн",
-        icon: "🎯",
-        eventType: "Networking / Meetup",
-        description:
-          "Разговор со студенти и HR претставници за тоа како најлесно да дојдеш до прва пракса.",
-      },
-    ],
-  },
-  research: {
-    name: "Истражување",
-    events: [
-      {
-        id: 301,
-        title: "Како да напишеш научен труд?",
-        date: "28 декември 2025",
-        time: "11:00 – 13:00",
-        location: "Универзитетска библиотека",
-        mode: "во живо",
-        icon: "📚",
-        eventType: "Работилница / Workshop",
-        description: "Водич низ процесот на пишување научен труд: структура, цитирање и избор на списание.",
-      },
-      {
-        id: 302,
-        title: "Machine Learning во научни истражувања",
-        date: "10 јануари 2026",
-        time: "17:30 – 19:30",
-        location: "Online (Zoom)",
-        mode: "онлајн",
-        icon: "📊",
-        eventType: "Предавање / Lecture",
-        description: "Интро предавање за тоа како ML се користи во медицина, психологија и општествени науки.",
-      },
-    ],
-  },
-  culture: {
-    name: "Култура",
-    events: [
-      {
-        id: 401,
-        title: "Филмска вечер: Европско кино 2025",
-        date: "16 декември 2025",
-        time: "20:00 – 22:30",
-        location: "Студентски културен центар",
-        mode: "во живо",
-        icon: "🎬",
-        eventType: "Друго",
-        description: "Проекција на европски филм + кратка дискусија со модератор по завршување.",
-      },
-    ],
-  },
-  health: { name: "Здравје", events: [] },
-  sport: { name: "Спорт", events: [] },
-  edu: { name: "Едукација", events: [] },
-  workshops: { name: "Работилници", events: [] },
-};
-
 const EVENTS_PER_PAGE = 20;
 
 const paginationBtn = {
@@ -233,9 +125,9 @@ export default function CategoryEvents() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalResults, setTotalResults] = useState(0);
+  const [categoryName, setCategoryName] = useState("Категорија");
 
-  const category = categoriesConfig[categoryId] || { name: "Категорија", events: [] };
-  const categoryName = category.name;
+  
   const isNumericId = /^\d+$/.test(categoryId);
 
   useEffect(() => {
@@ -273,7 +165,7 @@ export default function CategoryEvents() {
   }, [categoryId, page, isNumericId]);
 
   useEffect(() => {
-    if (!categoryId || isNumericId) return;
+    if (!categoryId || isNumericId || categoryName === "Категорија") return;
     setLoading(true);
     setApiError(null);
     const url = `${API_BASE}/public/get-events/category?category=${encodeURIComponent(categoryName)}`;
@@ -295,7 +187,7 @@ export default function CategoryEvents() {
   }, [categoryId, categoryName, isNumericId]);
 
   const localEvents = useMemo(() => getLocalEventsForCategory(categoryId), [categoryId]);
-  const fallbackEvents = useMemo(() => [...localEvents, ...(category.events || [])], [localEvents, category.events]);
+  const fallbackEvents = useMemo(() => [...localEvents], [localEvents]);
 
   const fullApiList = useMemo(
     () =>
@@ -327,6 +219,19 @@ export default function CategoryEvents() {
   const goToEventDetails = (eventId) => {
     navigate(`/event/${eventId}`);
   };
+
+ useEffect(() => {
+  if (!categoryId || !isNumericId) return;
+
+  axios
+    .get(`http://localhost:9091/api/category/public/get-category/${categoryId}`)
+    .then((res) => {
+      setCategoryName(res.data.name);
+    })
+    .catch(() => {
+      setCategoryName("Категорија");
+    });
+}, [categoryId, isNumericId]);
 
   return (
     <div className="category-events-page">

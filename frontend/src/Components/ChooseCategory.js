@@ -19,7 +19,17 @@ export default function ChooseCategory() {
           "http://localhost:9091/api/category/public/get-all"
         );
 
-        setCategories(res.data || []);
+        const uniqueCategories = (res.data || []).filter(
+  (cat, index, self) =>
+    index ===
+    self.findIndex(
+      (c) =>
+        c.name.toLowerCase().includes(cat.name.toLowerCase()) ||
+        cat.name.toLowerCase().includes(c.name.toLowerCase())
+    )
+);
+
+setCategories(uniqueCategories);
       } catch (err) {
         console.error(err);
         setError("Не може да се вчитаат категориите.");

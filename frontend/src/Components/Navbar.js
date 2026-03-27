@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../util/AuthProvider";
 import RightBottomToast from "./RightBottomToast";
 
@@ -29,16 +29,15 @@ function SiteNavbar() {
       onClose={() => setLogoutToast((t) => ({ ...t, show: false }))}
     />
     <Navbar expand="lg" bg="light" className="shadow-sm px-2 py-0">
-      
       <Navbar.Brand className="me-auto">
         <NavLink to="/">
-        <img
-          src="/logo.png"
-          width="60"
-          height="60"
-          className="d-inline-block align-top"
-          alt="Logo"
-        />
+          <img
+            src="/logo.png"
+            width="60"
+            height="60"
+            className="d-inline-block align-top"
+            alt="Logo"
+          />
         </NavLink>
       </Navbar.Brand>
 
@@ -88,8 +87,9 @@ function SiteNavbar() {
             </Nav.Link>
           )}
         </Nav>
-        {
-          !isAuthenticated ? (<NavLink to="/login" style={{ textDecoration: "none" }}>
+
+        {!isAuthenticated ? (
+          <NavLink to="/login" style={{ textDecoration: "none" }}>
             <button
               className="btn"
               style={{

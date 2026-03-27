@@ -50,6 +50,7 @@ function AppRoutes() {
             <Route path="/saved-events" element={<SavedEvents />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+           <Route path="*" element={<Home />} />
           </Routes>
           <Footer />
           <UniVibeAssistant />
