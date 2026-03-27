@@ -6,7 +6,7 @@ import { useAuth } from "../util/AuthProvider";
 const CATEGORY_OPTIONS = [
   { id: "tech", name: "Технологија" },
   { id: "career", name: "Кариeра" },
-  { id: "research", name: "Истражување" },
+  { id: "research", name: "Наука / Истражување" },
   { id: "culture", name: "Култура" },
   { id: "health", name: "Здравје" },
   { id: "sport", name: "Спорт" },

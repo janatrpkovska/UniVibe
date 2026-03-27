@@ -346,21 +346,6 @@ public class ChatbotServiceImpl implements ChatbotService {
                t.equals("hey");
     }
 
-    private boolean isSimplePolite(String text) {
-        String t = text.toLowerCase().trim();
-
-        return t.equals("ок") ||
-               t.equals("океј") ||
-               t.equals("оки") ||
-               t.equals("оке") ||
-               t.equals("окк") ||
-               t.equals("супер") ||
-               t.equals("топ") ||
-               t.equals("важи") ||
-               t.equals("пријатно") ||
-               t.equals("чао");
-    }
-
     private String getThankYouResponse() {
         return "Нема на што! Секогаш ми е драго да помогнам! 😊\n\nАко имаш уште прашања, слободно прашај! 👋";
     }

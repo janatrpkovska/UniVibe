@@ -722,11 +722,6 @@ const handleRegister = async (userData) => {
       📅 Настани
     </button>
 
-    <button className="uv-action-btn" onClick={() => {
-  setInput("настани");
-  sendMessage();
-}}></button>
-
     <button
       className="uv-action-btn"
       onClick={() => {
@@ -903,7 +898,7 @@ const handleRegister = async (userData) => {
                                         className="uv-action-btn"
                                         onClick={() => navigate("/search")}
                                         >
-                                        🔍 Види сите
+                                        🔍 Пребарај настан
                                         </button>
 
                                     </div>
