@@ -97,7 +97,7 @@ public class ChatbotDataServiceImpl implements ChatbotDataService {
         return """
             Здраво! Добредојде на UniVibe! 👋
             
-            Јас сум твој асистент и можам да ти помогнам со:
+            Јас сум твојот асистент и можам да ти помогнам со:
             • Пребарување на настани
             • Категории и типови настани
             • Филтрирање и пребарување
@@ -116,12 +116,12 @@ public class ChatbotDataServiceImpl implements ChatbotDataService {
         }
 
         return String.format("""
-            На UniVibe можеш да најдеш настани од овие категории:
-            
-            %s
-            
-            (Користи го пребарувањето за да филтрираш по категорија)
-            """, categoriesList);
+        Еве ги категориите на настани што можеш да ги истражиш 👇
+        
+        %s
+        
+        Напиши име на категорија (пример: „спорт“ или „кариера“) за да ти покажам настани 😊
+        """, categoriesList);
     }
 
     private String buildEventsContext() {
@@ -255,15 +255,13 @@ public class ChatbotDataServiceImpl implements ChatbotDataService {
         long eventCount = eventRepository.count();
 
         return String.format("""
-            UniVibe е платформа за универзитетски настани во Северна Македонија.
+            UniVibe е платформа за универзитетски настани во Македонија.
             
             Што можеш да правиш:
-            • Пребарување и филтрирање на настани
-            • Преглед на детални информации
-            • Пријавување на настани
+            • Пребарувај и филтрирај настани
+            • Зачувај ги омилените настани
+            • Прашај се што те интересира!
             
-            
-            Моментално има %d објавени настани.
             """,
                 eventCount
         );

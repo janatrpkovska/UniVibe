@@ -89,7 +89,7 @@ public class ChatbotServiceImpl implements ChatbotService {
                         Можам да ти помогнам со:
                         • Пребарување на настани
                         • Категории
-                        • Пријавување
+                        • Најава/Регистрација
     
                         Што те интересира?
                         """, "NONE");
@@ -189,7 +189,7 @@ public class ChatbotServiceImpl implements ChatbotService {
         } catch (Exception e) {
             log.error("Error calling Hugging Face API", e);
             return new ChatResponse(
-                    "Се извинувам, имав проблем да обработам прашање. Ве молам обидете се повторно.",
+                    "Се извинувам, имав проблем да го обработам прашањето. Ве молам обидете се повторно.",
                     "NONE"
             );
         }
@@ -204,8 +204,7 @@ public class ChatbotServiceImpl implements ChatbotService {
                     Можам да ти помогнам со:
                     • Пребарување на настани
                     • Категории (Спорт, Наука, Кариера...)
-                    • Пријавување на настан
-                    • Информации за објавување настан
+                    • Регистрација/Најава
     
                     Што те интересира?
                     """, "NONE");
@@ -352,9 +351,14 @@ public class ChatbotServiceImpl implements ChatbotService {
 
         return t.equals("ок") ||
                t.equals("океј") ||
+               t.equals("оки") ||
+               t.equals("оке") ||
+               t.equals("окк") ||
                t.equals("супер") ||
+               t.equals("топ") ||
                t.equals("важи") ||
-               t.equals("пријатно");
+               t.equals("пријатно") ||
+               t.equals("чао");
     }
 
     private String getThankYouResponse() {
