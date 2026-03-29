@@ -197,7 +197,6 @@ export default function CategoryEvents() {
         date: formatEventDate(e.startDate),
         eventType: e.eventType?.name ?? "",
         image: e.image_url ? resolveEventImageUrl(e.image_url) : null,
-        icon: "✨",
       })),
     [apiEvents]
   );
@@ -264,7 +263,11 @@ export default function CategoryEvents() {
               {eventsToShow.map((event) => (
                 <article key={event.id} className="event-card">
                   <div className="event-image">
-                    {event.image ? <img src={event.image} alt={event.title} /> : <span>{event.icon}</span>}
+                      {event.image ? (
+                          <img src={event.image} alt={event.title} />
+                      ) : (
+                          <img src="/logo.png" alt="default" />
+                      )}
                   </div>
 
                   <div className="event-body">
