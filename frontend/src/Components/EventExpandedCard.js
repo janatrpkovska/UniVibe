@@ -14,12 +14,15 @@ export default function EventExpandedCard({
     hostTitle= "Факултетско студентско собрание",
     description= "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     eventImage= "/students.png",
-    hostImage= "/fsslogo.png",
+    hostImage= "/Logo-UKIM.png",
     tag= "SCHEDULED",
     eventId,
     isSaved = false,
     onSaveToggle,
     isAuthenticated,
+    user,
+    onDelete,
+    onEdit,
     showOnline = false
 }) {
   return (
@@ -73,6 +76,23 @@ export default function EventExpandedCard({
                 </div>
               )}
             </div>
+            {user?.role === "ROLE_ADMIN" && (
+                <>
+                  <button
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={onEdit}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={onDelete}
+                  >
+                    Delete
+                  </button>
+                </>
+            )}
             {isAuthenticated && eventId && (
               <button
                 type="button"
