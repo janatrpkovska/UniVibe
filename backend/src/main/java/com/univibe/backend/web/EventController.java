@@ -148,6 +148,34 @@ public class EventController {
     public void deleteEventType(@PathVariable Long id) {
         eventTypeService.deleteEventType(id);
     }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
+        eventService.deleteEvent(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Event updateEvent(@PathVariable Long id, @RequestBody EventRequest request) {
+
+        return eventService.updateEvent(
+                id,
+                request.getTitle(),
+                request.getDescription(),
+                request.getStartDate(),
+                request.getEndDate(),
+                request.getLocation(),
+                request.getImage_url(),
+                request.getMode(),
+                request.getStatus(),
+                request.getSource(),
+                request.getCategory(),
+                request.getEventType(),
+                request.getFaculty()
+        );
+    }
+
 
     @GetMapping("/public/all-event-types")
     public List<EventType> getAllEventTypes() {
