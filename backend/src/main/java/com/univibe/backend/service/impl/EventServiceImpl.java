@@ -59,12 +59,12 @@ public class EventServiceImpl implements EventService {
         event.setEndDate(endDate);
         event.setLocation(location);
         event.setImage_url(image_url);
-        event.setMode(mode);
-        event.setEventType(eventType);
-        event.setFaculty(faculty);
-        event.setCategory(category);
-        event.setStatus(status);
-        event.setSource(source);
+        if (mode != null) event.setMode(mode);
+        if (eventType != null) event.setEventType(eventType);
+        if (faculty != null) event.setFaculty(faculty);
+        if (category != null) event.setCategory(category);
+        if (status != null) event.setStatus(status);
+        if (source != null) event.setSource(source);
 
         return eventJpaRepository.save(event);
     }
