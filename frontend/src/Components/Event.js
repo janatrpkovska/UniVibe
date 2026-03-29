@@ -40,7 +40,7 @@ function formatDateRange(startStr, endStr) {
 
 export default function Event() {
   const { id } = useParams();
-  const { token, isAuthenticated } = useAuth();
+  const { token, isAuthenticated, user } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -80,6 +80,26 @@ export default function Event() {
       .then((res) => setIsSaved(res.data === true))
       .catch(() => setIsSaved(false));
   }, [id, isAuthenticated, token]);
+
+  const handleDelete = () => {
+    if (!token || !id) return;
+
+    if (!window.confirm("Дали сте сигурни?")) return;
+
+    axios.delete(`${API_BASE}/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+        .then(() => {
+          alert("Настанот е избришан");
+          window.location.href = "/";
+        })
+        .catch(() => {
+          alert("Грешка при бришење");
+        });
+  };
+  const handleEdit = () => {
+    window.location.href = `/edit-event/${id}`;
+  };
 
   const handleSaveToggle = () => {
     if (!token || !id) return;
@@ -151,6 +171,9 @@ export default function Event() {
         isSaved={isSaved}
         onSaveToggle={handleSaveToggle}
         isAuthenticated={isAuthenticated}
+        user={user}
+        onDelete={handleDelete}
+        onEdit={handleEdit}
         showOnline={event.mode === "ONLINE" || event.mode === "HYBRID"}
       />
     </div>
