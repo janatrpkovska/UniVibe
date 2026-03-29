@@ -16,6 +16,7 @@ import "./App.css";
 import { AuthProvider, useAuth } from "./util/AuthProvider";
 import UniVibeAssistant from "./Components/UniVibeAssistant";
 import LoginSuccessToast from "./Components/LoginSuccessToast";
+import EditEvent from "./Components/EditEvent";
 
 function FloatingAddEventButton() {
   const location = useLocation();
@@ -50,6 +51,7 @@ function AppRoutes() {
             <Route path="/saved-events" element={<SavedEvents />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/edit-event/:id" element={<EditEvent />}/>
            <Route path="*" element={<Home />} />
           </Routes>
           <Footer />
