@@ -145,7 +145,7 @@ export default function Event() {
   const eventImage = eventImageSrc(event.image_url);
   const hostName = event.faculty?.name || event.eventType?.name || "UniVibe";
   const hostTitle = event.eventType?.name || event.faculty?.name || "";
-  const hostImage = "/fsslogo.png";
+  const hostImage = "/ukim-logo.png";
 
   return (
     <div style={{ backgroundColor: "#f5f7fa", minHeight: "100vh", padding: "20px 0" }}>

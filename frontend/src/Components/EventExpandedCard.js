@@ -14,7 +14,7 @@ export default function EventExpandedCard({
     hostTitle= "Факултетско студентско собрание",
     description= "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     eventImage= "/students.png",
-    hostImage= "/Logo-UKIM.png",
+    hostImage= "/fsslogo.png",
     tag= "SCHEDULED",
     eventId,
     isSaved = false,
@@ -120,7 +120,16 @@ export default function EventExpandedCard({
           
           <div className="row align-items-center mb-4">
             <div className="col-auto d-flex align-items-center">
-              <img src={hostImage} alt={hostName} className="rounded-circle" width="56" height="56" />
+              <img
+                  src={hostImage && hostImage.trim() !== "" ? hostImage : "/ukim-logo.png"}
+                  alt={hostName}
+                  className="rounded-circle"
+                  width="56"
+                  height="56"
+                  onError={(e) => {
+                    e.target.src = "/ukim-logo.png";
+                  }}
+              />
               <div className="ms-3">
                 <h5 className="mb-0 small text-muted">Host</h5>
                 <p className="mb-0 fw-semibold" style={{ fontSize: "1rem" }}>{hostName}</p>
