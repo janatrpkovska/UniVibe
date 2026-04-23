@@ -1,70 +1,82 @@
-# Getting Started with Create React App
+# ДОКУМЕНТАЦИЈА - UniVibe
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Backend-от е имплементиран со Java Spring Boot и следи Layered 3-tier архитектура, што обезбедува одвојување на одговорности, одржливост и скалабилност. 
 
-## Available Scripts
+## Архитектонски слоеви: 
 
-In the project directory, you can run:
+  - Controller Layer 
 
-### `npm start`
+    - Одговорен за обработка на дојдовни HTTP барања. 
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+    - Изложува REST endpoints за комуникација со frontend-от. 
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+    - Извршува основна валидација на барањата и ја делегира бизнис логиката на service слојот. 
 
-### `npm test`
+  - Service Layer 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    - Ја содржи основната бизнис логика на апликацијата. 
 
-### `npm run build`
+    - Се грижи за обработка, правила за валидација и оркестрација на операции. 
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  - Repository Layer 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    - Одговорен за директна комуникација со базата на податоци. 
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    - Користи Spring Data JPA за CRUD операции. 
 
-### `npm run eject`
+    - Ја апстрахира логиката за перзистенција од бизнис логиката. 
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+  - Database Layer 
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    - Ги складира сите перзистентни податоци на апликацијата. 
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Структура на проектот 
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Проектот следи модуларна и организирана структура: 
 
-## Learn More
+- Configuration 
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- Controller 
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Service 
 
-### Code Splitting
+- Repository 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- Dto 
 
-### Analyzing the Bundle Size
+- Model 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- Filter 
 
-### Making a Progressive Web App
+- Util 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Апликацијата користи Spring Security со JWT-базирана автентикација. 
+- Управување со сесии без зачувување на состојба (stateless). 
+- Авторизација на ниво на endpoint-и. 
+- Безбедно хеширање на лозинки со BCrypt. 
+- Custom authentication филтри за валидација на барања. 
 
-### Advanced Configuration
+ 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Frontend-от користи React Context-базиран систем за автентикација: 
+- JWT се зачувува во `localStorage`. 
+- Автоматско враќање на сесијата при reload. 
+- Ракување со истекување на токен со автоматско одјавување (logout). 
+- Глобален пристап преку custom `useAuth` hook.
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+![Scraper flow logic](/scraper.png)
 
-### `npm run build` fails to minify
+Системот автоматски собира и обработува настани користејќи pipeline. 
+ 
+- Собира настани од надворешeн извор. 
+- Филтрира дупликати врз основа на наслов. 
+- Ги збогатува податоците со користење на AI (Ollama). 
+- Ги складира структурираните настани во базата на податоци. 
+ 
+Се извршува на секои 6 часа со користење на Spring Boot scheduling.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## HomePage
+
+Тука е прикажан опис за веб-страницата со анимирани картички за статистики. Дополнително, најновите настани се превземаат од backend-от и се прикажуваат.
